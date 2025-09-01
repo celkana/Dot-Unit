@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "id": "potion",
+      "name": "Healing Potion",
+      "type": "consumable",
+      "effect": "Restore 20 HP to a unit."
+    },
+    {
+      "id": "amulet",
+      "name": "Lucky Amulet",
+      "type": "passive",
+      "effect": "Increase speed by 1.",
+      "stackable": true
+    },
+    {
+      "id": "sword",
+      "name": "Iron Sword",
+      "type": "equipment",
+      "effect": "Increase attack by 5 when equipped."
+    }
+  ]
+}

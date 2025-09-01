@@ -1,0 +1,20 @@
+{
+  "skills": [
+    {
+      "id": "slash",
+      "name": "Slash",
+      "power": 10,
+      "attribute": "physical",
+      "effect": "Deal damage to adjacent enemy.",
+      "range": 1
+    },
+    {
+      "id": "fireball",
+      "name": "Fireball",
+      "power": 8,
+      "attribute": "fire",
+      "effect": "Deal fire damage at range.",
+      "range": 2
+    }
+  ]
+}

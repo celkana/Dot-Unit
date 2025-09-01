@@ -1,0 +1,52 @@
+{
+  "units": [
+    {
+      "id": "hero",
+      "name": "Hero",
+      "hp": 30,
+      "mp": 10,
+      "attack": 10,
+      "defense": 5,
+      "speed": 5,
+      "race": "human",
+      "element": "none",
+      "skills": ["slash"]
+    },
+    {
+      "id": "mage",
+      "name": "Mage",
+      "hp": 20,
+      "mp": 30,
+      "attack": 5,
+      "defense": 3,
+      "speed": 7,
+      "race": "human",
+      "element": "fire",
+      "skills": ["fireball"]
+    },
+    {
+      "id": "goblin",
+      "name": "Goblin",
+      "hp": 25,
+      "mp": 0,
+      "attack": 8,
+      "defense": 2,
+      "speed": 4,
+      "race": "beast",
+      "element": "earth",
+      "skills": ["slash"]
+    },
+    {
+      "id": "orc",
+      "name": "Orc",
+      "hp": 35,
+      "mp": 0,
+      "attack": 12,
+      "defense": 4,
+      "speed": 3,
+      "race": "beast",
+      "element": "earth",
+      "skills": ["slash"]
+    }
+  ]
+}

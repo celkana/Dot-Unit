@@ -393,7 +393,7 @@ async function initFormationScreen() {
     const item = document.createElement('div');
     item.className = 'unit-slide-item';
     item.draggable = true;
-    item.innerHTML = `<img src="${u.image}" alt="${u.name}"><div class="unit-info">R${u.rank} ${u.name} Lv${u.level}</div>`;
+    item.innerHTML = `<img src="${u.image}" alt="${u.name}"><div class="unit-slide-info">R${u.rank} ${u.name} Lv${u.level}</div>`;
     item.addEventListener('dragstart', e => {
       e.dataTransfer.setData('unit', JSON.stringify(u));
     });

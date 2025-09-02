@@ -37,6 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initMenuUnits();
   initFormationScreen();
   initWorldScreen();
+
+  const formationBtn = document.getElementById('formation-button');
+  const formationBack = document.getElementById('formation-back');
+  if (formationBtn && formationBack) {
+    formationBtn.addEventListener('click', () => {
+      formationBack.setAttribute('data-target', 'units-screen');
+    });
+  }
 });
 
 function setRandomMenuBackground() {
@@ -666,6 +674,8 @@ function selectStage(fieldId, stageNumber) {
   if (formationField) {
     formationField.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
   }
+  const backBtn = document.getElementById('formation-back');
+  if (backBtn) backBtn.setAttribute('data-target', 'field-screen');
   if (window.loadFormationGrid) window.loadFormationGrid();
   loadEnemyFormation(stageNumber);
   window.showScreen('formation-screen');
@@ -761,6 +771,8 @@ function endBattle(victory) {
   const nextBtn = document.getElementById('next-stage-button');
 
   retryBtn.onclick = () => {
+    const backBtn = document.getElementById('formation-back');
+    if (backBtn) backBtn.setAttribute('data-target', 'field-screen');
     window.showScreen('formation-screen');
   };
   fieldBtn.onclick = () => {

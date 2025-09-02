@@ -368,6 +368,7 @@ html, body {
   position: relative;
   width: 960px;
   height: 100%;
+  background-size: cover;
 }
 
 #formation-grid {
@@ -416,6 +417,18 @@ html, body {
 #formation-right h,
 #formation-right p {
   margin: 0;
+}
+
+.stage-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.stage-buttons button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 #unit-slide {

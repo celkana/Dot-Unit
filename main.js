@@ -3,6 +3,8 @@ let formations = { 1: {}, 2: {}, 3: {} };
 let currentTeam = 1;
 let selectingForFormation = false;
 let formationSelectCell = null;
+let currentField = null;
+let currentStage = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
@@ -611,10 +613,54 @@ function initWorldScreen() {
 }
 
 function selectField(id, name) {
+  currentField = Number(id);
+  currentStage = null;
   const num = String(id).padStart(2, '0');
   const img = document.getElementById('field-image');
   const title = document.getElementById('field-name');
   if (img) img.src = `images/stages/field_${num}.png`;
   if (title) title.textContent = name;
+  renderStageButtons(currentField);
   window.showScreen('field-screen');
 }
+
+function renderStageButtons(fieldId) {
+  const container = document.getElementById('stage-buttons');
+  if (!container) return;
+  container.innerHTML = '';
+  const stageClear = JSON.parse(localStorage.getItem('stageClear') || '{}');
+  const cleared = stageClear[fieldId] || 0;
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.dataset.stage = i;
+    if (i > cleared + 1) {
+      btn.disabled = true;
+    }
+    btn.addEventListener('click', () => selectStage(fieldId, i));
+    container.appendChild(btn);
+  }
+}
+
+function selectStage(fieldId, stageNumber) {
+  currentStage = stageNumber;
+  const num = String(stageNumber).padStart(2, '0');
+  const formationField = document.getElementById('formation-field');
+  if (formationField) {
+    formationField.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
+  }
+  window.showScreen('formation-screen');
+}
+
+function markStageCleared(fieldId, stageNumber) {
+  const stageClear = JSON.parse(localStorage.getItem('stageClear') || '{}');
+  if (!stageClear[fieldId] || stageClear[fieldId] < stageNumber) {
+    stageClear[fieldId] = stageNumber;
+    localStorage.setItem('stageClear', JSON.stringify(stageClear));
+  }
+  if (currentField === fieldId) {
+    renderStageButtons(fieldId);
+  }
+}
+
+window.markStageCleared = markStageCleared;

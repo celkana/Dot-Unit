@@ -351,29 +351,43 @@ html, body {
 }
 
 .formation-main {
-  display: flex;
-  width: 100%;
-  flex: 1;
+  position: relative;
+  width: 940px;
+  height: 540px;
+  margin: 0 auto;
+}
+
+#formation-field {
+  position: relative;
+  width: 940px;
+  height: 540px;
+  background-image: url('images/fields/01.png');
+  background-size: cover;
+}
+
+#formation-grid {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: 936px;
+  height: 360px;
+  display: grid;
+  grid-template-columns: repeat(13, 72px);
+  grid-template-rows: repeat(5, 72px);
 }
 
 #formation-left {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 200px;
   padding: 0.5rem;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-#formation-grid {
-  width: 936px;
-  height: 360px;
-  background-image: url('images/fields/01.png');
-  background-size: cover;
-  display: grid;
-  grid-template-columns: repeat(13, 72px);
-  grid-template-rows: repeat(5, 72px);
-  position: relative;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
 }
 
 #formation-grid .cell {

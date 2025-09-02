@@ -1,6 +1,8 @@
 import pathlib
 import sys
 
+import pytest
+
 sys.path.append(str(pathlib.Path(__file__).resolve().parents[1]))
 
 from src.battle import BattleEngine, BattleField, create_dummy_definitions
@@ -79,3 +81,32 @@ def test_turn_order_and_take_turn():
     assert hero.name == "Hero"
     engine.take_turn(hero, "attack", enemies[0])
     assert enemies[0] in engine.graveyard
+
+
+def test_obstacles_and_movement_rules():
+    players, enemies = create_dummy_definitions()
+    field = BattleField({(4, 2)})
+    field.add_unit(players[0])
+
+    with pytest.raises(ValueError):
+        field.move_unit(players[0], (4, 2))
+
+    engine = BattleEngine.start_battle(players, enemies, obstacles={(4, 2)})
+    hero = players[0]
+
+    assert (4, 2) in engine.field.obstacles
+
+    # invalid vector
+    engine.move(hero, 1, 1)
+    assert hero.position == (5, 2)
+    assert engine.turn_logs[-1] == "Hero failed to move"
+
+    # blocked by obstacle
+    engine.move(hero, -1, 0)
+    assert hero.position == (5, 2)
+    assert engine.turn_logs[-1] == "Hero failed to move"
+
+    # valid move
+    engine.move(hero, 1, 0)
+    assert hero.position == (6, 2)
+    assert engine.turn_logs[-1] == "Hero moved to (6, 2)"

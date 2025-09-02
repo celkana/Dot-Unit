@@ -67,6 +67,7 @@ async function initUnitsScreen() {
   const countsDiv = document.getElementById('unit-counts');
   const sortSelect = document.getElementById('sort-select');
   const filterSelect = document.getElementById('filter-select');
+  const raceFilter = document.getElementById('race-filter');
   const pagination = document.getElementById('pagination');
   const footer = document.getElementById('units-footer');
 
@@ -80,14 +81,41 @@ async function initUnitsScreen() {
 
   sortSelect.addEventListener('change', applySortFilter);
   filterSelect.addEventListener('change', applySortFilter);
+  raceFilter.addEventListener('change', applySortFilter);
+
+  const elementNames = {
+    none: '無',
+    fire: '火',
+    water: '水',
+    wind: '風',
+    earth: '土',
+    light: '光',
+    dark: '闇'
+  };
+  const raceNames = {
+    human: '人間',
+    beast: '獣',
+    dragon: 'ドラゴン',
+    undead: 'アンデッド',
+    demon: '悪魔',
+    machine: '機械',
+    plant: '植物'
+  };
 
   function populateFilterOptions() {
     const elements = [...new Set(units.map(u => u.element))];
     elements.forEach(el => {
       const opt = document.createElement('option');
       opt.value = el;
-      opt.textContent = el;
+      opt.textContent = elementNames[el] || el;
       filterSelect.appendChild(opt);
+    });
+    const races = [...new Set(units.map(u => u.race))];
+    races.forEach(rc => {
+      const opt = document.createElement('option');
+      opt.value = rc;
+      opt.textContent = raceNames[rc] || rc;
+      raceFilter.appendChild(opt);
     });
   }
 
@@ -99,20 +127,25 @@ async function initUnitsScreen() {
       if (u.acquired) counts[u.element].acquired++;
     });
     countsDiv.innerHTML = Object.entries(counts)
-      .map(([el, c]) => `${el}: ${c.acquired}/${c.total}`)
+      .map(([el, c]) => `${elementNames[el] || el}: ${c.acquired}/${c.total}`)
       .join(' ');
   }
 
   function applySortFilter() {
     const sort = sortSelect.value;
-    const filter = filterSelect.value;
+    const elementFilter = filterSelect.value;
+    const race = raceFilter.value;
     let list = [...units];
-    if (filter !== 'all') {
-      list = list.filter(u => u.element === filter);
+    if (elementFilter !== 'all') {
+      list = list.filter(u => u.element === elementFilter);
+    }
+    if (race !== 'all') {
+      list = list.filter(u => u.race === race);
     }
     list.sort((a, b) => {
       if (sort === 'name') return a.name.localeCompare(b.name);
       if (sort === 'rank') return rankValue(b.rank) - rankValue(a.rank);
+      if (['hp', 'mp', 'attack', 'defense', 'speed'].includes(sort)) return b[sort] - a[sort];
       return 0;
     });
     filteredUnits = list;
@@ -165,8 +198,9 @@ async function initUnitsScreen() {
       ? `HP:${unit.hp} MP:${unit.mp} <br>攻:${unit.attack} 防:${unit.defense} 速:${unit.speed}`
       : '';
     const stars = '★'.repeat(rankValue(unit.rank));
+    const imgClass = unit.acquired ? 'unit-image' : 'unit-image silhouette';
     card.innerHTML = `
-      <img src="${unit.image}" alt="${unit.name}" class="unit-image">
+      <img src="${unit.image}" alt="${unit.name}" class="${imgClass}">
       <div class="unit-info">
         <div class="unit-top">
           <div class="unit-rank">${stars}</div>
@@ -188,6 +222,8 @@ async function initUnitsScreen() {
         <img src="${unit.image}" alt="${unit.name}" class="unit-image">
         <h3>${unit.name}</h3>
         <p>ランク: ${unit.rank}</p>
+        <p>種族: ${raceNames[unit.race] || unit.race}</p>
+        <p>属性: ${elementNames[unit.element] || unit.element}</p>
         <p>HP: ${unit.hp}</p>
         <p>MP: ${unit.mp}</p>
         <p>攻撃: ${unit.attack}</p>

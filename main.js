@@ -37,7 +37,7 @@ function setRandomMenuBackground() {
   const images = [];
   for (let i = 1; i <= 10; i++) {
     const num = String(i).padStart(2, '0');
-    images.push(`images/fields/${num}.png`);
+    images.push(`images/stages/stage_${num}.png`);
   }
   const img = images[Math.floor(Math.random() * images.length)];
   menu.style.backgroundImage = `url(${img})`;

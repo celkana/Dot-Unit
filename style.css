@@ -307,7 +307,7 @@ html, body {
 #formation-screen {
   align-items: flex-start;
   justify-content: flex-start;
-  background-image: url('images/fields/01.png');
+  background-image: url('images/stages/stage_01.png');
   background-size: cover;
 }
 

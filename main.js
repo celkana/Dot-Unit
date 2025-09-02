@@ -5,6 +5,8 @@ let selectingForFormation = false;
 let formationSelectCell = null;
 let currentField = null;
 let currentStage = null;
+let enemyFormation = [];
+let unitsDataMap = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
@@ -416,6 +418,7 @@ async function initFormationScreen() {
   const slideItemMap = {};
 
   const unitsData = await (await fetch('data/units.json')).json();
+  unitsData.units.forEach(u => (unitsDataMap[u.id] = u));
   const slideUnits = unitsData.units.filter(u => u.acquired);
   slideUnits.forEach(u => {
     const item = document.createElement('div');
@@ -537,7 +540,10 @@ async function initFormationScreen() {
     if (!cell) return;
     const unit = formations[currentTeam][cell.dataset.index];
     if (unit) {
-      unitStats.innerHTML = `<h3>${unit.name}</h3><p>HP:${unit.hp}</p><p>MP:${unit.mp}</p><p>攻:${unit.attack}</p><p>防:${unit.defense}</p><p>速:${unit.speed}</p>`;
+      unitStats.innerHTML = `<h3>${unit.name}</h3><p>Lv:${unit.level}</p><p>HP:${unit.hp}</p><p>MP:${unit.mp}</p><p>攻:${unit.attack}</p><p>防:${unit.defense}</p><p>速:${unit.speed}</p>`;
+    } else if (cell.dataset.enemy) {
+      const enemy = JSON.parse(cell.dataset.enemy);
+      unitStats.innerHTML = `<h3>${enemy.name}</h3><p>Lv:${enemy.level}</p><p>HP:${enemy.hp}</p><p>MP:${enemy.mp}</p><p>攻:${enemy.attack}</p><p>防:${enemy.defense}</p><p>速:${enemy.speed}</p>`;
     } else {
       unitStats.textContent = 'ユニット未選択';
     }
@@ -569,7 +575,7 @@ async function initFormationScreen() {
   }
 
   function loadGrid() {
-    grid.querySelectorAll('.cell').forEach(cell => {
+    grid.querySelectorAll('.player-area').forEach(cell => {
       const unit = formations[currentTeam][cell.dataset.index];
       cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}" class="player-unit" draggable="true">` : '';
     });
@@ -649,7 +655,59 @@ function selectStage(fieldId, stageNumber) {
   if (formationField) {
     formationField.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
   }
+  if (window.loadFormationGrid) window.loadFormationGrid();
+  loadEnemyFormation(stageNumber);
   window.showScreen('formation-screen');
+}
+
+async function loadEnemyFormation(stageNumber) {
+  const num = String(stageNumber).padStart(2, '0');
+  if (Object.keys(unitsDataMap).length === 0) {
+    const unitsData = await (await fetch('data/units.json')).json();
+    unitsData.units.forEach(u => (unitsDataMap[u.id] = u));
+  }
+  try {
+    const res = await fetch(`data/enemies/stage_${num}.json`);
+    const data = await res.json();
+    enemyFormation = data.enemies || [];
+  } catch (e) {
+    enemyFormation = [];
+  }
+  renderEnemyFormation();
+}
+
+function renderEnemyFormation() {
+  const grid = document.getElementById('formation-grid');
+  if (!grid) return;
+  grid.querySelectorAll('.enemy-unit').forEach(el => el.remove());
+  grid.querySelectorAll('.enemy-cell').forEach(cell => {
+    cell.classList.remove('enemy-cell');
+    delete cell.dataset.enemy;
+  });
+  enemyFormation.forEach(info => {
+    const cell = grid.querySelector(`.cell[data-index='${info.position}']`);
+    const unit = unitsDataMap[info.id];
+    if (!cell || !unit) return;
+    const img = document.createElement('img');
+    img.src = unit.image;
+    img.alt = unit.name;
+    img.className = 'enemy-unit';
+    cell.appendChild(img);
+    const stats = calcEnemyStats(unit, info.level);
+    cell.dataset.enemy = JSON.stringify({ name: unit.name, level: info.level, ...stats });
+    cell.classList.add('enemy-cell');
+  });
+}
+
+function calcEnemyStats(unit, level) {
+  const ratio = level / unit.level;
+  return {
+    hp: Math.round(unit.hp * ratio),
+    mp: Math.round(unit.mp * ratio),
+    attack: Math.round(unit.attack * ratio),
+    defense: Math.round(unit.defense * ratio),
+    speed: Math.round(unit.speed * ratio)
+  };
 }
 
 function markStageCleared(fieldId, stageNumber) {

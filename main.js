@@ -7,6 +7,7 @@ let currentField = null;
 let currentStage = null;
 let enemyFormation = [];
 let unitsDataMap = {};
+let player = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
@@ -451,13 +452,15 @@ async function initFormationScreen() {
 
   updateUnitSlide();
 
-  const player = {
+  player = JSON.parse(localStorage.getItem('playerData')) || {
     name: 'プレイヤー',
     level: 1,
     maxUnits: 5,
     bonuses: { hp: 10, mp: 10, attack: 10, defense: 10, speed: 10 },
-    gold: 1000
+    gold: 1000,
+    exp: 0
   };
+  localStorage.setItem('playerData', JSON.stringify(player));
 
   renderPlayerStatus();
 
@@ -563,6 +566,11 @@ async function initFormationScreen() {
     loadGrid();
   });
 
+  document.getElementById('battle-start').addEventListener('click', () => {
+    window.showScreen('battle-screen');
+    setTimeout(() => window.endBattle(true), 500);
+  });
+
   function updateTeamButtons() {
     document.querySelectorAll('.team-button').forEach(btn => {
       btn.classList.toggle('active', Number(btn.dataset.team) === currentTeam);
@@ -593,10 +601,13 @@ async function initFormationScreen() {
       <h4>${player.name}</h4>
       <p>Lv:${player.level}</p>
       <p>配置可能:${player.maxUnits}</p>
+      <p>Gold:${player.gold}</p>
+      <p>Exp:${player.exp || 0}</p>
       <p>ステ上昇 HP:${player.bonuses.hp}% MP:${player.bonuses.mp}%<br>攻:${player.bonuses.attack}% 防:${player.bonuses.defense}% 速:${player.bonuses.speed}%</p>`;
   }
 
   window.loadFormationGrid = loadGrid;
+  window.renderPlayerStatus = renderPlayerStatus;
 }
 
 function initWorldScreen() {
@@ -722,3 +733,72 @@ function markStageCleared(fieldId, stageNumber) {
 }
 
 window.markStageCleared = markStageCleared;
+
+function unlockField(fieldId) {
+  const access = JSON.parse(localStorage.getItem('fieldAccess') || '{}');
+  if (!access[fieldId]) {
+    access[fieldId] = true;
+    localStorage.setItem('fieldAccess', JSON.stringify(access));
+  }
+}
+
+function calculateRewards() {
+  let gold = 0;
+  let exp = 0;
+  enemyFormation.forEach(info => {
+    const level = info.level || 1;
+    gold += level * 10;
+    exp += level * 20;
+  });
+  return { gold, exp };
+}
+
+function endBattle(victory) {
+  const title = document.getElementById('result-title');
+  const summary = document.getElementById('result-summary');
+  const retryBtn = document.getElementById('retry-button');
+  const fieldBtn = document.getElementById('field-button');
+  const nextBtn = document.getElementById('next-stage-button');
+
+  retryBtn.onclick = () => {
+    window.showScreen('formation-screen');
+  };
+  fieldBtn.onclick = () => {
+    window.showScreen('field-screen');
+  };
+
+  if (victory) {
+    const rewards = calculateRewards();
+    player.gold += rewards.gold;
+    player.exp = (player.exp || 0) + rewards.exp;
+    localStorage.setItem('playerData', JSON.stringify(player));
+    if (window.renderPlayerStatus) window.renderPlayerStatus();
+    title.textContent = '勝利';
+    summary.innerHTML = `ゴールド +${rewards.gold}<br>経験値 +${rewards.exp}`;
+    markStageCleared(currentField, currentStage);
+    if (currentStage === 10) {
+      unlockField(currentField + 1);
+      nextBtn.textContent = '次のフィールドへ';
+      nextBtn.onclick = () => {
+        const nextFieldBtn = document.querySelector(`#world-map-container .field-button[data-field='${currentField + 1}']`);
+        const name = nextFieldBtn ? nextFieldBtn.textContent : '';
+        selectField(currentField + 1, name);
+      };
+    } else {
+      nextBtn.textContent = '次のステージへ';
+      nextBtn.onclick = () => {
+        if (currentStage != null) {
+          selectStage(currentField, currentStage + 1);
+        }
+      };
+    }
+    nextBtn.style.display = '';
+  } else {
+    title.textContent = '敗北';
+    summary.textContent = 'もう一度挑戦しよう！';
+    nextBtn.style.display = 'none';
+  }
+  window.showScreen('result-screen');
+}
+
+window.endBattle = endBattle;

@@ -386,6 +386,7 @@ async function initFormationScreen() {
   const playerStatusDiv = document.getElementById('player-status');
   const synergyDiv = document.getElementById('synergy');
   const unitSlide = document.getElementById('unit-slide');
+  const slideItemMap = {};
 
   const unitsData = await (await fetch('data/units.json')).json();
   const slideUnits = unitsData.units.filter(u => u.acquired);
@@ -393,6 +394,7 @@ async function initFormationScreen() {
     const item = document.createElement('div');
     item.className = 'unit-slide-item';
     item.draggable = true;
+    item.dataset.unitId = u.id;
     const stars = '★'.repeat(Number(u.rank));
     const name = u.name.length > 6 ? u.name.slice(0, 6) : u.name;
     item.innerHTML = `
@@ -404,8 +406,20 @@ async function initFormationScreen() {
     item.addEventListener('dragstart', e => {
       e.dataTransfer.setData('unit', JSON.stringify(u));
     });
+    slideItemMap[u.id] = item;
     unitSlide.appendChild(item);
   });
+
+  function updateUnitSlide() {
+    Object.values(slideItemMap).forEach(item => (item.style.display = ''));
+    const placed = Object.values(formations[currentTeam] || {}).map(u => u.id);
+    placed.forEach(id => {
+      const item = slideItemMap[id];
+      if (item) item.style.display = 'none';
+    });
+  }
+
+  updateUnitSlide();
 
   const player = {
     name: 'プレイヤー',
@@ -458,6 +472,11 @@ async function initFormationScreen() {
     if (data) {
       const unit = JSON.parse(data);
       const index = cell.dataset.index;
+      const alreadyPlaced = Object.values(formations[currentTeam]).some(u => u.id === unit.id);
+      if (alreadyPlaced) {
+        alert('このユニットは既に配置されています');
+        return;
+      }
       const placedCount = Object.keys(formations[currentTeam]).length;
       if (!formations[currentTeam][index] && placedCount >= player.maxUnits) {
         alert('これ以上配置できません');
@@ -528,6 +547,7 @@ async function initFormationScreen() {
       cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}" class="player-unit" draggable="true">` : '';
     });
     updateSynergy();
+    updateUnitSlide();
   }
 
   function updateSynergy() {

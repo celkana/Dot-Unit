@@ -411,6 +411,13 @@ html, body {
   color: #fff;
 }
 
+#formation-left h,
+#formation-left p,
+#formation-right h,
+#formation-right p {
+  margin: 0;
+}
+
 #unit-slide {
   position: absolute;
   top: 295px;
@@ -439,10 +446,13 @@ html, body {
   transform: scaleX(-1);
 }
 
-.unit-level {
+#unit-slide .unit-level {
   position: absolute;
   top: 0;
   right: 0;
+}
+
+.unit-level {
   background: rgba(0, 0, 0, 0.6);
   color: #fff;
   font-size: 0.7rem;

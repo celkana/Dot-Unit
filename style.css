@@ -91,6 +91,16 @@ html, body {
   cursor: pointer;
 }
 
+.unit-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.player-unit {
+  transform: scaleX(-1);
+}
+
 #unit-sidebar {
   width: 200px;
   padding: 0.5rem;

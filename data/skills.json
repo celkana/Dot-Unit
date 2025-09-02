@@ -2,18 +2,18 @@
   "skills": [
     {
       "id": "slash",
-      "name": "Slash",
+      "name": "斬撃",
       "power": 8,
       "attribute": "physical",
-      "effect": "Deal damage to adjacent enemy.",
+      "effect": "隣接する敵にダメージを与える。",
       "range": 1
     },
     {
       "id": "fireball",
-      "name": "Fireball",
+      "name": "火球",
       "power": 9,
       "attribute": "fire",
-      "effect": "Deal fire damage at range.",
+      "effect": "離れた敵に火属性ダメージを与える。",
       "range": 2
     }
   ]

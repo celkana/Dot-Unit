@@ -169,6 +169,17 @@ class BattleEngine:
         status["winner"] = self.check_victory()
         return status
 
+    def end_battle(self, victory: bool) -> None:
+        """Forcefully end the battle with the given result.
+
+        Clearing the turn order prevents any further actions and records the
+        outcome in the turn logs so callers can display an appropriate result
+        screen.
+        """
+        winner = "player" if victory else "enemy"
+        self.turn_logs.append(f"{winner} wins!")
+        self.order.clear()
+
     # Internal helpers --------------------------------------------------
     def _update_base_control(self) -> None:
         player_unit = self.field.unit_at(BattleField.ENEMY_BASE)

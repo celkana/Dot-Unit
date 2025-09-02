@@ -380,11 +380,25 @@ async function initUnitsScreen() {
   window.showUnitDetail = showDetail;
 }
 
-function initFormationScreen() {
+async function initFormationScreen() {
   const grid = document.getElementById('formation-grid');
   const unitStats = document.getElementById('selected-unit-stats');
   const playerStatusDiv = document.getElementById('player-status');
   const synergyDiv = document.getElementById('synergy');
+  const unitSlide = document.getElementById('unit-slide');
+
+  const unitsData = await (await fetch('data/units.json')).json();
+  const slideUnits = unitsData.units.filter(u => u.acquired);
+  slideUnits.forEach(u => {
+    const item = document.createElement('div');
+    item.className = 'unit-slide-item';
+    item.draggable = true;
+    item.innerHTML = `<img src="${u.image}" alt="${u.name}"><div class="unit-info">R${u.rank} ${u.name} Lv${u.level}</div>`;
+    item.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('unit', JSON.stringify(u));
+    });
+    unitSlide.appendChild(item);
+  });
 
   const player = {
     name: 'プレイヤー',
@@ -404,7 +418,7 @@ function initFormationScreen() {
       cell.className = 'cell';
       const idx = r * cols + c;
       cell.dataset.index = idx;
-      if (c >= cols - 3) cell.classList.add('player-area');
+      if (c >= cols - 4) cell.classList.add('player-area');
       grid.appendChild(cell);
     }
   }
@@ -420,13 +434,48 @@ function initFormationScreen() {
     if (unit) {
       showScreen('units-screen');
       showUnitDetail(unit, true, index);
-    } else {
+    }
+  });
+
+  grid.addEventListener('dragover', e => {
+    const cell = e.target.closest('.cell');
+    if (!cell || !cell.classList.contains('player-area')) return;
+    e.preventDefault();
+  });
+
+  grid.addEventListener('drop', e => {
+    const cell = e.target.closest('.cell');
+    if (!cell || !cell.classList.contains('player-area')) return;
+    e.preventDefault();
+    const data = e.dataTransfer.getData('unit');
+    if (data) {
+      const unit = JSON.parse(data);
+      const index = cell.dataset.index;
       const placedCount = Object.keys(formations[currentTeam]).length;
-      if (placedCount >= player.maxUnits) {
+      if (!formations[currentTeam][index] && placedCount >= player.maxUnits) {
         alert('これ以上配置できません');
         return;
       }
-      enterFormationSelection(cell);
+      formations[currentTeam][index] = unit;
+      loadGrid();
+    }
+  });
+
+  grid.addEventListener('dragstart', e => {
+    const img = e.target.closest('.player-unit');
+    if (!img) return;
+    const cell = img.parentElement;
+    e.dataTransfer.setData('from-grid', cell.dataset.index);
+  });
+
+  unitSlide.addEventListener('dragover', e => e.preventDefault());
+
+  unitSlide.addEventListener('drop', e => {
+    e.preventDefault();
+    const index = e.dataTransfer.getData('from-grid');
+    if (index) {
+      delete formations[currentTeam][index];
+      loadGrid();
     }
   });
 
@@ -469,7 +518,7 @@ function initFormationScreen() {
   function loadGrid() {
     grid.querySelectorAll('.cell').forEach(cell => {
       const unit = formations[currentTeam][cell.dataset.index];
-      cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}" class="player-unit">` : '';
+      cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}" class="player-unit" draggable="true">` : '';
     });
     updateSynergy();
   }

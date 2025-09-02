@@ -3,10 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <title>Dot Unit</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    #game-area {
+      flex: 1;
+      background: #222;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 16 / 9;
+      width: 100%;
+    }
+    #menu {
+      background: #444;
+      color: #fff;
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+    #menu button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
-  <h1>Dot Unit Prototype</h1>
-  <p>フロントエンドはまだ開発中です。バトルログは <code>python src/ui/turn_log.py</code> で確認してください。</p>
+  <div id="app">
+    <div id="game-area">
+      <p>Game view placeholder</p>
+    </div>
+    <div id="menu">
+      <button>Move</button>
+      <button>Attack</button>
+      <button>Pass</button>
+    </div>
+  </div>
   <script type="module">
     console.log('Dot Unit frontend placeholder');
   </script>

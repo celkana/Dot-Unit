@@ -544,3 +544,13 @@ html, body {
   pointer-events: none;
 }
 
+#result-summary {
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+

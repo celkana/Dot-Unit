@@ -55,3 +55,27 @@ def test_real_time_combat():
     engine.real_time_step({players[0]: ("attack", enemies[1])})
     status = engine.battle_status()
     assert status["winner"] == "player"
+
+
+def test_turn_order_and_take_turn():
+    players, enemies = create_dummy_definitions()
+    engine = BattleEngine.start_battle(players, enemies)
+
+    # SPD order: Mage (7) > Hero (5) > Goblin (4) > Orc (3)
+    assert [u.name for u in engine.order] == ["Mage", "Hero", "Goblin", "Orc"]
+
+    # Mage acts first and passes the turn
+    unit = engine.next_unit()
+    assert unit.name == "Mage"
+    engine.take_turn(unit, "pass")
+    assert engine.turn_logs[-1] == "Mage passed"
+
+    # Move goblin next to the hero and reduce its HP for a guaranteed kill
+    engine.field.move_unit(enemies[0], (4, 2))
+    enemies[0].hp = 1
+
+    # Hero acts next and defeats the goblin
+    hero = engine.next_unit()
+    assert hero.name == "Hero"
+    engine.take_turn(hero, "attack", enemies[0])
+    assert enemies[0] in engine.graveyard

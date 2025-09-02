@@ -27,7 +27,13 @@ class BattleEngine:
         field = BattleField()
         for unit in players + enemies:
             field.add_unit(unit)
-        return cls(field)
+        engine = cls(field)
+        # Ensure the initial turn order is sorted by speed so that the caller
+        # can repeatedly retrieve units via ``next_unit`` and process their
+        # actions with ``take_turn``.
+        engine.order = engine.field.turn_order()
+        engine.index = 0
+        return engine
 
     # Turn management ---------------------------------------------------
     def next_unit(self) -> Optional[Unit]:
@@ -39,6 +45,38 @@ class BattleEngine:
         return unit
 
     # Actions ------------------------------------------------------------
+    def take_turn(self, unit: Unit, action: str, *args) -> None:
+        """Execute ``action`` for ``unit``.
+
+        ``action`` is a string identifying the desired operation. Supported
+        values are ``"move"``, ``"attack"`` and ``"pass"``. Additional
+        parameters for the action are supplied via ``*args``:
+
+        * ``move`` requires ``dx`` and ``dy``.
+        * ``attack`` requires a ``target`` and optionally a ``skill``.
+        * ``pass`` takes no additional arguments.
+
+        After the action is processed the internal victory check happens via
+        the action specific methods which call :meth:`_after_action`.
+        """
+
+        if unit not in self.field.all_units():
+            return
+
+        if action == "move" and len(args) >= 2:
+            dx, dy = int(args[0]), int(args[1])
+            self.move(unit, dx, dy)
+        elif action == "attack" and len(args) >= 1:
+            target = args[0]
+            skill = args[1] if len(args) > 1 else None
+            self.attack(unit, target, skill)
+        elif action in {"pass", "wait", "pass_turn"}:
+            self.pass_turn(unit)
+        else:
+            # Unknown or malformed action – treat as a pass but record it.
+            self.turn_logs.append(f"{unit.name} did nothing")
+            self._after_action()
+
     def move(self, unit: Unit, dx: int, dy: int) -> None:
         new_pos = (unit.position[0] + dx, unit.position[1] + dy)
         try:

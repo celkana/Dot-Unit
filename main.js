@@ -641,10 +641,15 @@ function selectField(id, name) {
   currentField = Number(id);
   currentStage = null;
   const num = String(id).padStart(2, '0');
-  const img = document.getElementById('field-image');
+  const fieldScreen = document.getElementById('field-screen');
   const title = document.getElementById('field-name');
-  if (img) img.src = `images/stages/field_${num}.png`;
+  if (fieldScreen) {
+    fieldScreen.style.backgroundImage = `url(images/stages/field_${num}.png)`;
+    fieldScreen.style.backgroundSize = '100% 100%';
+  }
   if (title) title.textContent = name;
+  const islandBtn = document.getElementById('field-image-button');
+  if (islandBtn) islandBtn.onclick = () => selectStage(currentField, 1);
   renderStageButtons(currentField);
   window.showScreen('field-screen');
 }

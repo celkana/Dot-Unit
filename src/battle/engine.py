@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from .entities import Skill, Unit
 from .grid import BattleField
@@ -18,13 +18,18 @@ class BattleEngine:
         self.turn_logs: List[str] = []
 
     @classmethod
-    def start_battle(cls, players: List[Unit], enemies: List[Unit]) -> "BattleEngine":
+    def start_battle(
+        cls,
+        players: List[Unit],
+        enemies: List[Unit],
+        obstacles: Optional[Set[Tuple[int, int]]] = None,
+    ) -> "BattleEngine":
         """Create a battle engine with units placed on the field.
 
         The units are expected to already have positions assigned based on
         formation screen selections.
         """
-        field = BattleField()
+        field = BattleField(obstacles)
         for unit in players + enemies:
             field.add_unit(unit)
         engine = cls(field)
@@ -78,8 +83,10 @@ class BattleEngine:
             self._after_action()
 
     def move(self, unit: Unit, dx: int, dy: int) -> None:
-        new_pos = (unit.position[0] + dx, unit.position[1] + dy)
         try:
+            if (dx, dy) not in {(-1, 0), (1, 0), (0, -1), (0, 1)}:
+                raise ValueError("Invalid movement vector")
+            new_pos = (unit.position[0] + dx, unit.position[1] + dy)
             self.field.move_unit(unit, new_pos)
             self.turn_logs.append(f"{unit.name} moved to {new_pos}")
         except ValueError:

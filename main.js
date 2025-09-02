@@ -163,8 +163,7 @@ async function initUnitsScreen() {
   }
 
   function rankValue(rank) {
-    const map = { S: 5, A: 4, B: 3, C: 2, D: 1 };
-    return map[rank] || 0;
+    return parseInt(rank, 10) || 0;
   }
 
   function renderPage() {
@@ -202,6 +201,9 @@ async function initUnitsScreen() {
   function createCard(unit) {
     const card = document.createElement('div');
     card.className = 'unit-card';
+    if (unit.acquired) {
+      card.classList.add(`rank-${rankValue(unit.rank)}`);
+    }
     const name = unit.acquired ? unit.name : '???';
     const stats = unit.acquired
       ? `HP:${unit.hp} MP:${unit.mp} <br>攻:${unit.attack} 防:${unit.defense} 速:${unit.speed}`

@@ -7,6 +7,22 @@
       "attribute": "earth",
       "effect": "全ての敵に土属性ダメージを与える。",
       "range": 3
+    },
+    {
+      "id": "slash",
+      "name": "斬撃",
+      "power": 8,
+      "attribute": "physical",
+      "effect": "隣接する敵にダメージを与える。",
+      "range": 1
+    },
+    {
+      "id": "fireball",
+      "name": "火球",
+      "power": 9,
+      "attribute": "fire",
+      "effect": "離れた敵に火属性ダメージを与える。",
+      "range": 2
     }
   ]
 }

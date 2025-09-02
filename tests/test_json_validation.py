@@ -67,26 +67,67 @@ UNIT_SCHEMA = {
                 "required": [
                     "id",
                     "name",
+                    "level",
+                    "maxLevel",
+                    "reincarnationLevel",
+                    "growPoint",
+                    "image",
                     "hp",
+                    "maxHp",
                     "mp",
+                    "maxMp",
                     "attack",
+                    "maxAttack",
                     "defense",
+                    "maxDefense",
                     "speed",
+                    "maxSpeed",
                     "race",
                     "element",
-                    "skills"
+                    "rank",
+                    "weaponSlots",
+                    "artifactSlots",
+                    "weaponTypes",
+                    "acquired",
+                    "skills",
+                    "bossSkills",
+                    "drops",
+                    "reward",
+                    "description"
                 ],
                 "properties": {
                     "id": {"type": "string"},
                     "name": {"type": "string"},
+                    "level": {"type": "number"},
+                    "maxLevel": {"type": "number"},
+                    "reincarnationLevel": {"type": "number"},
+                    "growPoint": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": {"type": "number"}
+                        }
+                    },
+                    "image": {"type": "string"},
                     "hp": {"type": "number"},
+                    "maxHp": {"type": "number"},
                     "mp": {"type": "number"},
+                    "maxMp": {"type": "number"},
                     "attack": {"type": "number"},
+                    "maxAttack": {"type": "number"},
                     "defense": {"type": "number"},
+                    "maxDefense": {"type": "number"},
                     "speed": {"type": "number"},
+                    "maxSpeed": {"type": "number"},
                     "race": {"type": "string"},
                     "element": {"type": "string"},
-                    "skills": {"type": "array"},
+                    "rank": {"type": "number"},
+                    "weaponSlots": {"type": "number"},
+                    "artifactSlots": {"type": "number"},
+                    "weaponTypes": {"type": "array", "items": {"type": "string"}},
+                    "acquired": {"type": "boolean"},
+                    "skills": {"type": "array", "items": {"type": "string"}},
+                    "bossSkills": {"type": "array", "items": {"type": "string"}},
                     "drops": {
                         "type": "array",
                         "items": {
@@ -107,9 +148,10 @@ UNIT_SCHEMA = {
                         },
                         "required": ["gold", "exp"],
                         "additionalProperties": False
-                    }
+                    },
+                    "description": {"type": "string"}
                 },
-                "additionalProperties": True
+                "additionalProperties": False
             }
         }
     },
@@ -132,3 +174,4 @@ def test_units_schema():
 
 def test_boss_skills_schema():
     Draft7Validator(SKILL_SCHEMA).validate(load("data/boss_skills.json"))
+

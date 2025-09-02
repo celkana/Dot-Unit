@@ -587,6 +587,11 @@ async function initFormationScreen() {
   });
 
   document.getElementById('battle-start').addEventListener('click', () => {
+    const num = String(currentStage).padStart(2, '0');
+    const battleScreen = document.getElementById('battle-screen');
+    if (battleScreen) {
+      battleScreen.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
+    }
     window.showScreen('battle-screen');
     initBattle();
   });
@@ -800,8 +805,8 @@ function initBattle() {
   const grid = document.getElementById('battle-grid');
   if (!grid) return;
   grid.innerHTML = '';
-  for (let y = 0; y < 5; y++) {
-    for (let x = 0; x < 7; x++) {
+  for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 9; x++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       cell.dataset.x = x;

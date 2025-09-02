@@ -20,10 +20,29 @@
     </section>
 
     <section id="units-screen" class="screen">
-      <h2>ユニット一覧</h2>
+      <div class="units-header">
+        <h2>ユニット一覧</h2>
+        <div id="unit-counts" class="unit-counts"></div>
+      </div>
       <div id="unit-grid" class="unit-grid"></div>
       <div id="unit-detail" class="unit-detail hidden"></div>
-      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+      <div id="units-footer" class="units-footer">
+        <div class="sort-filter">
+          <label>ソート
+            <select id="sort-select">
+              <option value="name">名前</option>
+              <option value="rank">ランク</option>
+            </select>
+          </label>
+          <label>属性
+            <select id="filter-select">
+              <option value="all">全て</option>
+            </select>
+          </label>
+        </div>
+        <div id="pagination" class="pagination"></div>
+        <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+      </div>
     </section>
 
     <section id="battle-screen" class="screen">

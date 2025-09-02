@@ -64,20 +64,124 @@ async function initUnitsScreen() {
   const units = (await res.json()).units;
   const grid = document.getElementById('unit-grid');
   const detail = document.getElementById('unit-detail');
+  const countsDiv = document.getElementById('unit-counts');
+  const sortSelect = document.getElementById('sort-select');
+  const filterSelect = document.getElementById('filter-select');
+  const pagination = document.getElementById('pagination');
+  const footer = document.getElementById('units-footer');
 
-  units.forEach(unit => {
+  const itemsPerPage = 15;
+  let currentPage = 1;
+  let filteredUnits = [...units];
+
+  populateFilterOptions();
+  renderCounts();
+  renderPage();
+
+  sortSelect.addEventListener('change', applySortFilter);
+  filterSelect.addEventListener('change', applySortFilter);
+
+  function populateFilterOptions() {
+    const elements = [...new Set(units.map(u => u.element))];
+    elements.forEach(el => {
+      const opt = document.createElement('option');
+      opt.value = el;
+      opt.textContent = el;
+      filterSelect.appendChild(opt);
+    });
+  }
+
+  function renderCounts() {
+    const counts = {};
+    units.forEach(u => {
+      if (!counts[u.element]) counts[u.element] = { total: 0, acquired: 0 };
+      counts[u.element].total++;
+      if (u.acquired) counts[u.element].acquired++;
+    });
+    countsDiv.innerHTML = Object.entries(counts)
+      .map(([el, c]) => `${el}: ${c.acquired}/${c.total}`)
+      .join(' ');
+  }
+
+  function applySortFilter() {
+    const sort = sortSelect.value;
+    const filter = filterSelect.value;
+    let list = [...units];
+    if (filter !== 'all') {
+      list = list.filter(u => u.element === filter);
+    }
+    list.sort((a, b) => {
+      if (sort === 'name') return a.name.localeCompare(b.name);
+      if (sort === 'rank') return rankValue(b.rank) - rankValue(a.rank);
+      return 0;
+    });
+    filteredUnits = list;
+    currentPage = 1;
+    renderPage();
+  }
+
+  function rankValue(rank) {
+    const map = { S: 5, A: 4, B: 3, C: 2, D: 1 };
+    return map[rank] || 0;
+  }
+
+  function renderPage() {
+    grid.innerHTML = '';
+    const start = (currentPage - 1) * itemsPerPage;
+    const pageItems = filteredUnits.slice(start, start + itemsPerPage);
+    pageItems.forEach(unit => {
+      grid.appendChild(createCard(unit));
+    });
+    updatePagination();
+  }
+
+  function updatePagination() {
+    const totalPages = Math.max(1, Math.ceil(filteredUnits.length / itemsPerPage));
+    pagination.innerHTML = '';
+    const prev = document.createElement('button');
+    prev.textContent = '〈';
+    prev.disabled = currentPage === 1;
+    prev.addEventListener('click', () => {
+      currentPage--;
+      renderPage();
+    });
+    const info = document.createElement('span');
+    info.textContent = `${currentPage}/${totalPages}`;
+    const next = document.createElement('button');
+    next.textContent = '〉';
+    next.disabled = currentPage === totalPages;
+    next.addEventListener('click', () => {
+      currentPage++;
+      renderPage();
+    });
+    pagination.append(prev, info, next);
+  }
+
+  function createCard(unit) {
     const card = document.createElement('div');
     card.className = 'unit-card';
     const name = unit.acquired ? unit.name : '???';
+    const stats = unit.acquired
+      ? `HP:${unit.hp} MP:${unit.mp} 攻:${unit.attack} 防:${unit.defense} 速:${unit.speed}`
+      : '';
+    const stars = '★'.repeat(rankValue(unit.rank));
     card.innerHTML = `
       <img src="${unit.image}" alt="${unit.name}" class="unit-image">
-      <strong>${name}</strong>`;
+      <div class="unit-info">
+        <div class="unit-top">
+          <div class="unit-rank">${stars}</div>
+          <div class="unit-level">Lv.1 【+0】</div>
+        </div>
+        <div class="unit-name">${name}</div>
+        <div class="unit-stats">${stats}</div>
+      </div>`;
     card.addEventListener('click', () => showDetail(unit));
-    grid.appendChild(card);
-  });
+    return card;
+  }
 
   function showDetail(unit) {
     grid.classList.add('hidden');
+    footer.classList.add('hidden');
     if (unit.acquired) {
       const drops = unit.drops ? unit.drops.map(d => `${d.item}(${d.rate})`).join(', ') : 'なし';
       detail.innerHTML = `
@@ -104,6 +208,7 @@ async function initUnitsScreen() {
     document.getElementById('back-to-list').addEventListener('click', () => {
       detail.classList.add('hidden');
       grid.classList.remove('hidden');
+      footer.classList.remove('hidden');
     });
   }
 }

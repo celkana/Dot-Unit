@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   showScreen('menu-screen');
 
   initUnitsScreen();
+  initBattleScreen();
 });
 
 async function initUnitsScreen() {
@@ -33,6 +34,8 @@ async function initUnitsScreen() {
   const nextPageBtn = document.getElementById('next-page');
   const pageInfo = document.getElementById('page-info');
   const detail = document.getElementById('unit-detail');
+  const unitsControls = document.querySelector('.units-controls');
+  const formationBtn = document.getElementById('formation-button');
 
   sidebarCount.textContent = units.length;
 
@@ -71,23 +74,36 @@ async function initUnitsScreen() {
     pageUnits.forEach(u => {
       const card = document.createElement('div');
       card.className = 'unit-card';
-      card.innerHTML = `<strong>${u.name}</strong><br>HP: ${u.hp} MP: ${u.mp}`;
+      card.innerHTML = `
+        <img src="${u.image}" alt="${u.name}" class="unit-image">
+        <strong>${u.name}</strong><br>HP: ${u.hp} MP: ${u.mp}`;
       card.addEventListener('click', () => showDetails(u));
       grid.appendChild(card);
     });
   }
 
   function showDetails(unit) {
+    grid.classList.add('hidden');
+    unitsControls.classList.add('hidden');
+    formationBtn.classList.add('hidden');
     detail.innerHTML = `
+      <img src="${unit.image}" alt="${unit.name}" class="unit-image">
       <h3>${unit.name}</h3>
       <p>HP: ${unit.hp}</p>
       <p>MP: ${unit.mp}</p>
-      <p>Attack: ${unit.attack}</p>
-      <p>Defense: ${unit.defense}</p>
-      <p>Speed: ${unit.speed}</p>
-      <p>Race: ${unit.race}</p>
-      <p>Element: ${unit.element}</p>`;
+      <p>攻撃: ${unit.attack}</p>
+      <p>防御: ${unit.defense}</p>
+      <p>速度: ${unit.speed}</p>
+      <p>種族: ${unit.race}</p>
+      <p>属性: ${unit.element}</p>
+      <button id="back-to-list">一覧に戻る</button>`;
     detail.classList.remove('hidden');
+    document.getElementById('back-to-list').addEventListener('click', () => {
+      detail.classList.add('hidden');
+      grid.classList.remove('hidden');
+      unitsControls.classList.remove('hidden');
+      formationBtn.classList.remove('hidden');
+    });
   }
 
   sortSelect.addEventListener('change', render);
@@ -108,4 +124,24 @@ async function initUnitsScreen() {
   });
 
   applyFilters();
+}
+
+async function initBattleScreen() {
+  const res = await fetch('data/units.json');
+  const data = await res.json();
+  const units = data.units;
+  const hero = units.find(u => u.id === 'hero');
+  const enemy = units.find(u => u.id === 'goblin');
+  const area = document.getElementById('game-area');
+  area.innerHTML = '';
+  const heroImg = document.createElement('img');
+  heroImg.src = hero.image;
+  heroImg.alt = hero.name;
+  heroImg.className = 'unit-image player-unit';
+  const enemyImg = document.createElement('img');
+  enemyImg.src = enemy.image;
+  enemyImg.alt = enemy.name;
+  enemyImg.className = 'unit-image';
+  area.appendChild(heroImg);
+  area.appendChild(enemyImg);
 }

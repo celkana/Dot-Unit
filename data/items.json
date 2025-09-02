@@ -2,26 +2,26 @@
   "items": [
     {
       "id": "potion",
-      "name": "Healing Potion",
+      "name": "回復薬",
       "type": "consumable",
-      "effect": "Restore 20 HP to a unit.",
+      "effect": "HPを20回復する。",
       "drop_rate": 0.5,
       "value": 10
     },
     {
       "id": "amulet",
-      "name": "Lucky Amulet",
+      "name": "幸運のお守り",
       "type": "passive",
-      "effect": "Increase speed by 1.",
+      "effect": "速度が1上昇する。",
       "stackable": true,
       "drop_rate": 0.1,
       "value": 50
     },
     {
       "id": "sword",
-      "name": "Iron Sword",
+      "name": "鉄の剣",
       "type": "equipment",
-      "effect": "Increase attack by 5 when equipped.",
+      "effect": "装備すると攻撃力が5上昇する。",
       "drop_rate": 0.2,
       "value": 30
     }

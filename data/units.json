@@ -2,7 +2,8 @@
   "units": [
     {
       "id": "hero",
-      "name": "Hero",
+      "name": "勇者",
+      "image": "images/units/hero.png",
       "hp": 28,
       "mp": 10,
       "attack": 9,
@@ -14,7 +15,8 @@
     },
     {
       "id": "mage",
-      "name": "Mage",
+      "name": "魔法使い",
+      "image": "images/units/mage.png",
       "hp": 18,
       "mp": 30,
       "attack": 6,
@@ -26,7 +28,8 @@
     },
     {
       "id": "goblin",
-      "name": "Goblin",
+      "name": "ゴブリン",
+      "image": "images/units/goblin.png",
       "hp": 22,
       "mp": 0,
       "attack": 7,
@@ -40,7 +43,8 @@
     },
     {
       "id": "orc",
-      "name": "Orc",
+      "name": "オーク",
+      "image": "images/units/orc.png",
       "hp": 38,
       "mp": 0,
       "attack": 11,

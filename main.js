@@ -62,6 +62,15 @@ async function initMenuUnits() {
 async function initUnitsScreen() {
   const res = await fetch('data/units.json');
   const units = (await res.json()).units;
+  const skillsData = await (await fetch('data/skills.json')).json();
+  const bossSkillsData = await (await fetch('data/boss_skills.json')).json();
+  const skillNames = {};
+  skillsData.skills.forEach(s => (skillNames[s.id] = s.name));
+  const bossSkillNames = {};
+  bossSkillsData.skills.forEach(s => (bossSkillNames[s.id] = s.name));
+  const unitLevels = {};
+  const unitReinc = {};
+
   const grid = document.getElementById('unit-grid');
   const detail = document.getElementById('unit-detail');
   const countsDiv = document.getElementById('unit-counts');
@@ -216,29 +225,64 @@ async function initUnitsScreen() {
   function showDetail(unit) {
     grid.classList.add('hidden');
     footer.classList.add('hidden');
+    if (!unitLevels[unit.id]) unitLevels[unit.id] = 1;
+    if (!unitReinc[unit.id]) unitReinc[unit.id] = 0;
     if (unit.acquired) {
       const drops = unit.drops ? unit.drops.map(d => `${d.item}(${d.rate})`).join(', ') : 'なし';
+      const skills = (unit.skills || []).map(id => skillNames[id] || id);
+      const boss = unit.bossSkill ? (bossSkillNames[unit.bossSkill] || unit.bossSkill) : 'なし';
       detail.innerHTML = `
-        <img src="${unit.image}" alt="${unit.name}" class="unit-image">
-        <h3>${unit.name}</h3>
-        <p>ランク: ${unit.rank}</p>
-        <p>種族: ${raceNames[unit.race] || unit.race}</p>
-        <p>属性: ${elementNames[unit.element] || unit.element}</p>
-        <p>HP: ${unit.hp}</p>
-        <p>MP: ${unit.mp}</p>
-        <p>攻撃: ${unit.attack}</p>
-        <p>防御: ${unit.defense}</p>
-        <p>速度: ${unit.speed}</p>
-        <p>武器スロット: ${unit.weaponSlots}</p>
-        <p>アーティファクトスロット: ${unit.artifactSlots}</p>
-        <p>装備可能武器タイプ: ${unit.weaponTypes.join(', ')}</p>
-        <p>ドロップ: ${drops}</p>
-        <button id="back-to-list">一覧に戻る</button>`;
+        <div class="detail-content">
+          <div class="detail-left">
+            <div class="unit-level">Lv.<span id="detail-level">${unitLevels[unit.id]}</span><small>+<span id="detail-reinc">${unitReinc[unit.id]}</span></small></div>
+            <div class="unit-name">${unit.name}</div>
+            <div>属性: ${elementNames[unit.element] || unit.element}</div>
+            <div>種族: ${raceNames[unit.race] || unit.race}</div>
+            <div class="unit-stats">
+              <p>HP: ${unit.hp}</p>
+              <p>MP: ${unit.mp}</p>
+              <p>攻撃: ${unit.attack}</p>
+              <p>防御: ${unit.defense}</p>
+              <p>速度: ${unit.speed}</p>
+            </div>
+            <div class="unit-slots">
+              <p>ウェポン枠: ${unit.weaponSlots}</p>
+              <p>アーティファクト枠: ${unit.artifactSlots}</p>
+              <p>ルーン枠: ${unit.runeSlots || 0}</p>
+            </div>
+          </div>
+          <div class="detail-center">
+            <img src="${unit.image}" alt="${unit.name}" class="unit-image">
+          </div>
+          <div class="detail-right">
+            <div class="equip-effects">
+              <h4>装備効果</h4>
+              <p>なし</p>
+            </div>
+            <div class="unit-skills">
+              <h4>スキル</h4>
+              <ul>${skills.length ? skills.map(s => `<li>${s}</li>`).join('') : '<li>なし</li>'}</ul>
+            </div>
+            <div class="unit-boss-skill">
+              <h4>ボススキル</h4>
+              <p>${boss}</p>
+            </div>
+            <div class="unit-drops">
+              <h4>ドロップ</h4>
+              <p>${drops}</p>
+            </div>
+          </div>
+        </div>
+        <div class="detail-bottom">
+          <button id="reset-equip" class="detail-button">装備をリセット</button>
+          <button id="reincarnate" class="detail-button">転生</button>
+          <button id="back-to-list" class="detail-button">一覧に戻る</button>
+        </div>`;
     } else {
       detail.innerHTML = `
         <h3>???</h3>
         <p>未取得のユニットです。</p>
-        <button id="back-to-list">一覧に戻る</button>`;
+        <div class="detail-bottom"><button id="back-to-list" class="detail-button">一覧に戻る</button></div>`;
     }
     detail.classList.remove('hidden');
     document.getElementById('back-to-list').addEventListener('click', () => {
@@ -246,5 +290,22 @@ async function initUnitsScreen() {
       grid.classList.remove('hidden');
       footer.classList.remove('hidden');
     });
+    const reincBtn = document.getElementById('reincarnate');
+    if (reincBtn) {
+      reincBtn.addEventListener('click', () => {
+        if (unitReinc[unit.id] < 200) {
+          unitReinc[unit.id] += 1;
+          unitLevels[unit.id] = 1;
+          document.getElementById('detail-level').textContent = unitLevels[unit.id];
+          document.getElementById('detail-reinc').textContent = unitReinc[unit.id];
+        }
+      });
+    }
+    const resetBtn = document.getElementById('reset-equip');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        alert('装備をリセットしました');
+      });
+    }
   }
 }

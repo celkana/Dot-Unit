@@ -154,6 +154,49 @@ html, body {
 
 .unit-detail {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.detail-content {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.detail-left,
+.detail-right {
+  width: 30%;
+  text-align: left;
+}
+
+.detail-center {
+  width: 40%;
+}
+
+.detail-bottom {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.detail-button {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+}
+
+.detail-button:hover {
+  background: #666;
+  transform: translateY(-2px);
 }
 
 .units-footer {

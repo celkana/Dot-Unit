@@ -10,13 +10,27 @@
     <section id="menu-screen" class="screen active">
       <h1 class="game-title">Dot-Unit</h1>
       <div class="menu-buttons">
-        <button data-target="battle-screen">バトル</button>
+        <button data-target="world-screen">バトル</button>
         <button data-target="units-screen">ユニット一覧</button>
         <button data-target="items-screen">アイテム一覧</button>
         <button data-target="research-screen">研究</button>
         <button data-target="options-screen">設定</button>
       </div>
       <div id="menu-moving-units"></div>
+    </section>
+
+    <section id="world-screen" class="screen">
+      <div id="world-map-container">
+        <button class="field-button" data-field="1" style="top: 240px; left: 220px;">始まりの島</button>
+        <button class="field-button" data-field="2" style="top: 160px; left: 520px;">？？？</button>
+      </div>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
+
+    <section id="field-screen" class="screen">
+      <h2 id="field-name"></h2>
+      <img id="field-image" alt="field">
+      <button class="back-button" data-target="world-screen">ワールドに戻る</button>
     </section>
 
     <section id="units-screen" class="screen">

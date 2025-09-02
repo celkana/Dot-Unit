@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
       screen.classList.toggle('active', screen.id === id);
     });
   }
+  window.showScreen = showScreen;
 
   document.querySelectorAll('[data-target]').forEach(button => {
     button.addEventListener('click', () => {
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initUnitsScreen();
   initMenuUnits();
   initFormationScreen();
+  initWorldScreen();
 });
 
 function setRandomMenuBackground() {
@@ -587,4 +589,32 @@ async function initFormationScreen() {
   }
 
   window.loadFormationGrid = loadGrid;
+}
+
+function initWorldScreen() {
+  const defaultAccess = { 1: true, 2: false };
+  const access = JSON.parse(localStorage.getItem('fieldAccess')) || defaultAccess;
+  if (!localStorage.getItem('fieldAccess')) {
+    localStorage.setItem('fieldAccess', JSON.stringify(access));
+  }
+  const buttons = document.querySelectorAll('#world-map-container .field-button');
+  buttons.forEach(btn => {
+    const id = btn.dataset.field;
+    if (!access[id]) {
+      btn.classList.add('locked');
+    }
+    btn.addEventListener('click', () => {
+      if (!access[id]) return;
+      selectField(id, btn.textContent);
+    });
+  });
+}
+
+function selectField(id, name) {
+  const num = String(id).padStart(2, '0');
+  const img = document.getElementById('field-image');
+  const title = document.getElementById('field-name');
+  if (img) img.src = `images/stages/field_${num}.png`;
+  if (title) title.textContent = name;
+  window.showScreen('field-screen');
 }

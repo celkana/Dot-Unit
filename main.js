@@ -1,3 +1,9 @@
+
+let formations = { 1: {}, 2: {}, 3: {} };
+let currentTeam = 1;
+let selectingForFormation = false;
+let formationSelectCell = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
 
@@ -10,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-target]').forEach(button => {
     button.addEventListener('click', () => {
       const target = button.getAttribute('data-target');
+      if (target !== 'units-screen') {
+        selectingForFormation = false;
+        formationSelectCell = null;
+      } else if (window.unitsRenderPage) {
+        window.unitsRenderPage();
+      }
       showScreen(target);
     });
   });
@@ -119,6 +131,15 @@ async function initUnitsScreen() {
     applySortFilter();
   });
 
+  window.enterFormationSelection = cell => {
+    selectingForFormation = true;
+    formationSelectCell = cell;
+    detail.classList.add('hidden');
+    grid.classList.remove('hidden');
+    footer.classList.remove('hidden');
+    renderPage();
+  };
+
   function populateFilterOptions() {
     const elements = [...new Set(units.map(u => u.element))];
     elements.forEach(el => {
@@ -186,6 +207,7 @@ async function initUnitsScreen() {
     });
     updatePagination();
   }
+  window.unitsRenderPage = renderPage;
 
   function updatePagination() {
     const totalPages = Math.max(1, Math.ceil(filteredUnits.length / itemsPerPage));
@@ -231,11 +253,27 @@ async function initUnitsScreen() {
         <div class="unit-name">${name}</div>
         <div class="unit-stats">${stats}</div>
       </div>`;
-    card.addEventListener('click', () => showDetail(unit));
+    const alreadyPlaced = Object.values(formations[currentTeam]).some(u => u.id === unit.id);
+    if (selectingForFormation) {
+      if (alreadyPlaced) {
+        card.classList.add('disabled');
+      } else {
+        card.addEventListener('click', () => {
+          formations[currentTeam][formationSelectCell.dataset.index] = unit;
+          selectingForFormation = false;
+          formationSelectCell = null;
+          if (window.loadFormationGrid) window.loadFormationGrid();
+          renderPage();
+          showScreen('formation-screen');
+        });
+      }
+    } else {
+      card.addEventListener('click', () => showDetail(unit));
+    }
     return card;
   }
 
-  function showDetail(unit) {
+  function showDetail(unit, fromFormation = false, cellIndex = null) {
     grid.classList.add('hidden');
     footer.classList.add('hidden');
     if (!unitLevels[unit.id]) unitLevels[unit.id] = 1;
@@ -289,20 +327,38 @@ async function initUnitsScreen() {
         <div class="detail-bottom">
           <button id="reset-equip" class="detail-button">装備をリセット</button>
           <button id="reincarnate" class="detail-button">転生</button>
-          <button id="back-to-list" class="detail-button">一覧に戻る</button>
+          ${fromFormation ? '<button id="remove-from-formation" class="detail-button">編成からはずす</button>' : ''}
+          <button id="back-to-list" class="detail-button">${fromFormation ? '戻る' : '一覧に戻る'}</button>
         </div>`;
     } else {
       detail.innerHTML = `
         <h3>???</h3>
         <p>未取得のユニットです。</p>
-        <div class="detail-bottom"><button id="back-to-list" class="detail-button">一覧に戻る</button></div>`;
+        <div class="detail-bottom"><button id="back-to-list" class="detail-button">${fromFormation ? '戻る' : '一覧に戻る'}</button></div>`;
     }
     detail.classList.remove('hidden');
-    document.getElementById('back-to-list').addEventListener('click', () => {
-      detail.classList.add('hidden');
-      grid.classList.remove('hidden');
-      footer.classList.remove('hidden');
-    });
+    const backBtn = document.getElementById('back-to-list');
+    if (fromFormation) {
+      backBtn.addEventListener('click', () => {
+        detail.classList.add('hidden');
+        showScreen('formation-screen');
+      });
+      const removeBtn = document.getElementById('remove-from-formation');
+      if (removeBtn) {
+        removeBtn.addEventListener('click', () => {
+          delete formations[currentTeam][cellIndex];
+          if (window.loadFormationGrid) window.loadFormationGrid();
+          detail.classList.add('hidden');
+          showScreen('formation-screen');
+        });
+      }
+    } else {
+      backBtn.addEventListener('click', () => {
+        detail.classList.add('hidden');
+        grid.classList.remove('hidden');
+        footer.classList.remove('hidden');
+      });
+    }
     const reincBtn = document.getElementById('reincarnate');
     if (reincBtn) {
       reincBtn.addEventListener('click', () => {
@@ -315,20 +371,17 @@ async function initUnitsScreen() {
       });
     }
     const resetBtn = document.getElementById('reset-equip');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        alert('装備をリセットしました');
-      });
-    }
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      alert('装備をリセットしました');
+    });
   }
+  }
+  window.showUnitDetail = showDetail;
 }
 
-async function initFormationScreen() {
-  const res = await fetch('data/units.json');
-  const units = (await res.json()).units.filter(u => u.acquired);
+function initFormationScreen() {
   const grid = document.getElementById('formation-grid');
-  const unitSelection = document.getElementById('unit-selection');
-  const selectionContent = unitSelection.querySelector('.unit-selection-content');
   const unitStats = document.getElementById('selected-unit-stats');
   const playerStatusDiv = document.getElementById('player-status');
   const synergyDiv = document.getElementById('synergy');
@@ -343,21 +396,19 @@ async function initFormationScreen() {
 
   renderPlayerStatus();
 
-  const rows = 5;
-  const cols = 13;
+  const rows = 4;
+  const cols = 9;
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
       const idx = r * cols + c;
       cell.dataset.index = idx;
-      if (c >= cols - 6) cell.classList.add('player-area');
+      if (c >= cols - 3) cell.classList.add('player-area');
       grid.appendChild(cell);
     }
   }
 
-  const formations = { 1: {}, 2: {}, 3: {} };
-  let currentTeam = 1;
   updateTeamButtons();
   loadGrid();
 
@@ -365,12 +416,33 @@ async function initFormationScreen() {
     const cell = e.target.closest('.cell');
     if (!cell || !cell.classList.contains('player-area')) return;
     const index = cell.dataset.index;
-    const placedCount = Object.keys(formations[currentTeam]).length;
-    if (!formations[currentTeam][index] && placedCount >= player.maxUnits) {
-      alert('これ以上配置できません');
-      return;
+    const unit = formations[currentTeam][index];
+    if (unit) {
+      showScreen('units-screen');
+      showUnitDetail(unit, true, index);
+    } else {
+      const placedCount = Object.keys(formations[currentTeam]).length;
+      if (placedCount >= player.maxUnits) {
+        alert('これ以上配置できません');
+        return;
+      }
+      enterFormationSelection(cell);
     }
-    openSelection(cell);
+  });
+
+  grid.addEventListener('mouseover', e => {
+    const cell = e.target.closest('.cell');
+    if (!cell) return;
+    const unit = formations[currentTeam][cell.dataset.index];
+    if (unit) {
+      unitStats.innerHTML = `<h3>${unit.name}</h3><p>HP:${unit.hp}</p><p>MP:${unit.mp}</p><p>攻:${unit.attack}</p><p>防:${unit.defense}</p><p>速:${unit.speed}</p>`;
+    } else {
+      unitStats.textContent = 'ユニット未選択';
+    }
+  });
+
+  grid.addEventListener('mouseleave', () => {
+    unitStats.textContent = 'ユニット未選択';
   });
 
   document.getElementById('save-formation').addEventListener('click', () => {
@@ -381,10 +453,6 @@ async function initFormationScreen() {
   document.getElementById('reset-formation').addEventListener('click', () => {
     formations[currentTeam] = {};
     loadGrid();
-  });
-
-  unitSelection.addEventListener('click', e => {
-    if (e.target === unitSelection) unitSelection.classList.add('hidden');
   });
 
   function updateTeamButtons() {
@@ -401,39 +469,9 @@ async function initFormationScreen() {
   function loadGrid() {
     grid.querySelectorAll('.cell').forEach(cell => {
       const unit = formations[currentTeam][cell.dataset.index];
-      cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}">` : '';
+      cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}" class="player-unit">` : '';
     });
     updateSynergy();
-  }
-
-  function openSelection(cell) {
-    selectionContent.innerHTML = '';
-    const clearBtn = document.createElement('button');
-    clearBtn.textContent = '空';
-    clearBtn.style.width = '100%';
-    clearBtn.addEventListener('click', () => {
-      delete formations[currentTeam][cell.dataset.index];
-      cell.innerHTML = '';
-      unitStats.textContent = 'ユニット未選択';
-      unitSelection.classList.add('hidden');
-      updateSynergy();
-    });
-    selectionContent.appendChild(clearBtn);
-
-    units.forEach(u => {
-      const img = document.createElement('img');
-      img.src = u.image;
-      img.alt = u.name;
-      img.addEventListener('click', () => {
-        formations[currentTeam][cell.dataset.index] = u;
-        cell.innerHTML = `<img src="${u.image}" alt="${u.name}">`;
-        unitStats.innerHTML = `<h3>${u.name}</h3><p>HP:${u.hp}</p><p>MP:${u.mp}</p><p>攻:${u.attack}</p><p>防:${u.defense}</p><p>速:${u.speed}</p>`;
-        unitSelection.classList.add('hidden');
-        updateSynergy();
-      });
-      selectionContent.appendChild(img);
-    });
-    unitSelection.classList.remove('hidden');
   }
 
   function updateSynergy() {
@@ -448,5 +486,7 @@ async function initFormationScreen() {
       <p>配置可能:${player.maxUnits}</p>
       <p>ステ上昇 HP:${player.bonuses.hp}% MP:${player.bonuses.mp}%<br>攻:${player.bonuses.attack}% 防:${player.bonuses.defense}% 速:${player.bonuses.speed}%</p>
       <p>ゴールド:${player.gold}</p>`;
-}
+  }
+
+  window.loadFormationGrid = loadGrid;
 }

@@ -13,11 +13,22 @@ document.addEventListener('DOMContentLoaded', () => {
       showScreen(target);
     });
   });
-
+  setRandomMenuBackground();
   showScreen('menu-screen');
   initUnitsScreen();
   initMenuUnits();
 });
+
+function setRandomMenuBackground() {
+  const menu = document.getElementById('menu-screen');
+  const images = [];
+  for (let i = 1; i <= 10; i++) {
+    const num = String(i).padStart(2, '0');
+    images.push(`images/fields/${num}.png`);
+  }
+  const img = images[Math.floor(Math.random() * images.length)];
+  menu.style.backgroundImage = `url(${img})`;
+}
 
 async function initMenuUnits() {
   const res = await fetch('data/units.json');
@@ -34,12 +45,14 @@ async function initMenuUnits() {
     img.style.left = x + 'px';
     container.appendChild(img);
     let dir = Math.random() < 0.5 ? -1 : 1;
+    img.style.transform = dir === -1 ? 'scaleX(-1)' : 'scaleX(1)';
     const speed = 0.5 + Math.random();
     setInterval(() => {
       let pos = parseFloat(img.style.left);
       pos += dir * speed;
       if (pos < -50 || pos > width) {
         dir *= -1;
+        img.style.transform = dir === -1 ? 'scaleX(-1)' : 'scaleX(1)';
       }
       img.style.left = pos + 'px';
     }, 20);

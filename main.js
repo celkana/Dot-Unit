@@ -51,14 +51,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const battleStart = document.getElementById('battle-start');
   if (battleStart) {
-    battleStart.addEventListener('click', () => {
+    battleStart.addEventListener('click', async () => {
       const num = String(currentStage).padStart(2, '0');
       const battleScreen = document.getElementById('battle-screen');
       if (battleScreen) {
         battleScreen.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
       }
+      await initBattle();
       window.showScreen('battle-screen');
-      initBattle();
     });
   }
 

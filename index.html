@@ -28,7 +28,46 @@
 
   <section id="units-screen" class="screen">
     <h2>Units</h2>
-    <p>Available units placeholder</p>
+    <div class="units-wrapper">
+      <div id="unit-grid" class="unit-grid"></div>
+      <aside id="unit-sidebar">
+        <h3>Owned Units</h3>
+        <p id="owned-count">0</p>
+      </aside>
+    </div>
+    <div class="units-controls">
+      <label>Sort
+        <select id="sort-select">
+          <option value="name">Name</option>
+          <option value="hp">HP</option>
+          <option value="mp">MP</option>
+          <option value="attack">Attack</option>
+          <option value="defense">Defense</option>
+          <option value="speed">Speed</option>
+        </select>
+      </label>
+      <label>Element
+        <select id="filter-element">
+          <option value="">All</option>
+          <option value="fire">Fire</option>
+          <option value="earth">Earth</option>
+          <option value="none">None</option>
+        </select>
+      </label>
+      <label>Race
+        <select id="filter-race">
+          <option value="">All</option>
+          <option value="human">Human</option>
+          <option value="beast">Beast</option>
+        </select>
+      </label>
+      <div class="pagination">
+        <button id="prev-page">Prev</button>
+        <span id="page-info">1/1</span>
+        <button id="next-page">Next</button>
+      </div>
+    </div>
+    <div id="unit-detail" class="unit-detail hidden"></div>
     <button class="back-button" data-target="menu-screen">Back to Menu</button>
   </section>
 

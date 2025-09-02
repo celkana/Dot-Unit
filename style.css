@@ -253,9 +253,28 @@ html, body {
   background: #666;
 }
 
+.sort-filter button {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sort-filter button:hover {
+  background: #666;
+}
+
 .pagination {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-buttons {
+  display: flex;
   gap: 0.5rem;
 }
 

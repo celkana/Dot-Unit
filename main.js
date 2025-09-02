@@ -77,12 +77,14 @@ async function initUnitsScreen() {
   const sortSelect = document.getElementById('sort-select');
   const filterSelect = document.getElementById('filter-select');
   const raceFilter = document.getElementById('race-filter');
+  const toggleUnacquired = document.getElementById('toggle-unacquired');
   const pagination = document.getElementById('pagination');
   const footer = document.getElementById('units-footer');
 
   const itemsPerPage = 15;
   let currentPage = 1;
   let filteredUnits = [...units];
+  let showUnacquired = true;
 
   const elementNames = {
     none: '無',
@@ -110,6 +112,11 @@ async function initUnitsScreen() {
   sortSelect.addEventListener('change', applySortFilter);
   filterSelect.addEventListener('change', applySortFilter);
   raceFilter.addEventListener('change', applySortFilter);
+  toggleUnacquired.addEventListener('click', () => {
+    showUnacquired = !showUnacquired;
+    toggleUnacquired.textContent = showUnacquired ? '未取得非表示' : '未取得表示';
+    applySortFilter();
+  });
 
   function populateFilterOptions() {
     const elements = [...new Set(units.map(u => u.element))];
@@ -150,6 +157,9 @@ async function initUnitsScreen() {
     }
     if (race !== 'all') {
       list = list.filter(u => u.race === race);
+    }
+    if (!showUnacquired) {
+      list = list.filter(u => u.acquired);
     }
     list.sort((a, b) => {
       if (sort === 'name') return a.name.localeCompare(b.name);

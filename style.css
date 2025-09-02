@@ -353,14 +353,14 @@ html, body {
 .formation-main {
   position: relative;
   width: 940px;
-  height: 540px;
+  height: calc(100% - 60px);
   margin: 0 auto;
 }
 
 #formation-field {
   position: relative;
   width: 940px;
-  height: 540px;
+  height: 100%;
   background-image: url('images/fields/01.png');
   background-size: cover;
 }

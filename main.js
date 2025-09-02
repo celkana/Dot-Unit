@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   showScreen('menu-screen');
   initUnitsScreen();
   initMenuUnits();
+  initFormationScreen();
 });
 
 function setRandomMenuBackground() {
@@ -320,4 +321,132 @@ async function initUnitsScreen() {
       });
     }
   }
+}
+
+async function initFormationScreen() {
+  const res = await fetch('data/units.json');
+  const units = (await res.json()).units.filter(u => u.acquired);
+  const grid = document.getElementById('formation-grid');
+  const unitSelection = document.getElementById('unit-selection');
+  const selectionContent = unitSelection.querySelector('.unit-selection-content');
+  const unitStats = document.getElementById('selected-unit-stats');
+  const playerStatusDiv = document.getElementById('player-status');
+  const synergyDiv = document.getElementById('synergy');
+
+  const player = {
+    name: 'プレイヤー',
+    level: 1,
+    maxUnits: 5,
+    bonuses: { hp: 10, mp: 10, attack: 10, defense: 10, speed: 10 },
+    gold: 1000
+  };
+
+  renderPlayerStatus();
+
+  const rows = 5;
+  const cols = 13;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const idx = r * cols + c;
+      cell.dataset.index = idx;
+      if (c >= cols - 6) cell.classList.add('player-area');
+      grid.appendChild(cell);
+    }
+  }
+
+  const formations = { 1: {}, 2: {}, 3: {} };
+  let currentTeam = 1;
+  updateTeamButtons();
+  loadGrid();
+
+  grid.addEventListener('click', e => {
+    const cell = e.target.closest('.cell');
+    if (!cell || !cell.classList.contains('player-area')) return;
+    const index = cell.dataset.index;
+    const placedCount = Object.keys(formations[currentTeam]).length;
+    if (!formations[currentTeam][index] && placedCount >= player.maxUnits) {
+      alert('これ以上配置できません');
+      return;
+    }
+    openSelection(cell);
+  });
+
+  document.getElementById('save-formation').addEventListener('click', () => {
+    localStorage.setItem('formations', JSON.stringify(formations));
+    alert('保存しました');
+  });
+
+  document.getElementById('reset-formation').addEventListener('click', () => {
+    formations[currentTeam] = {};
+    loadGrid();
+  });
+
+  unitSelection.addEventListener('click', e => {
+    if (e.target === unitSelection) unitSelection.classList.add('hidden');
+  });
+
+  function updateTeamButtons() {
+    document.querySelectorAll('.team-button').forEach(btn => {
+      btn.classList.toggle('active', Number(btn.dataset.team) === currentTeam);
+      btn.addEventListener('click', () => {
+        currentTeam = Number(btn.dataset.team);
+        loadGrid();
+        updateTeamButtons();
+      });
+    });
+  }
+
+  function loadGrid() {
+    grid.querySelectorAll('.cell').forEach(cell => {
+      const unit = formations[currentTeam][cell.dataset.index];
+      cell.innerHTML = unit ? `<img src="${unit.image}" alt="${unit.name}">` : '';
+    });
+    updateSynergy();
+  }
+
+  function openSelection(cell) {
+    selectionContent.innerHTML = '';
+    const clearBtn = document.createElement('button');
+    clearBtn.textContent = '空';
+    clearBtn.style.width = '100%';
+    clearBtn.addEventListener('click', () => {
+      delete formations[currentTeam][cell.dataset.index];
+      cell.innerHTML = '';
+      unitStats.textContent = 'ユニット未選択';
+      unitSelection.classList.add('hidden');
+      updateSynergy();
+    });
+    selectionContent.appendChild(clearBtn);
+
+    units.forEach(u => {
+      const img = document.createElement('img');
+      img.src = u.image;
+      img.alt = u.name;
+      img.addEventListener('click', () => {
+        formations[currentTeam][cell.dataset.index] = u;
+        cell.innerHTML = `<img src="${u.image}" alt="${u.name}">`;
+        unitStats.innerHTML = `<h3>${u.name}</h3><p>HP:${u.hp}</p><p>MP:${u.mp}</p><p>攻:${u.attack}</p><p>防:${u.defense}</p><p>速:${u.speed}</p>`;
+        unitSelection.classList.add('hidden');
+        updateSynergy();
+      });
+      selectionContent.appendChild(img);
+    });
+    unitSelection.classList.remove('hidden');
+  }
+
+  function updateSynergy() {
+    const count = Object.keys(formations[currentTeam]).length;
+    synergyDiv.textContent = `シナジー: ${count}`;
+  }
+
+  function renderPlayerStatus() {
+    playerStatusDiv.innerHTML = `
+      <h4>${player.name}</h4>
+      <p>Lv:${player.level}</p>
+      <p>配置可能:${player.maxUnits}</p>
+      <p>ステ上昇 HP:${player.bonuses.hp}% MP:${player.bonuses.mp}%<br>攻:${player.bonuses.attack}% 防:${player.bonuses.defense}% 速:${player.bonuses.speed}%</p>
+      <p>ゴールド:${player.gold}</p>`;
+}
 }

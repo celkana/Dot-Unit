@@ -298,3 +298,143 @@ html, body {
   background: #666;
   transform: translateY(-2px);
 }
+
+#formation-screen {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.formation-top {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.team-buttons,
+.formation-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.team-button {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+}
+
+.team-button.active {
+  background: #888;
+}
+
+#formation-screen .formation-actions button {
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+}
+
+#formation-screen .formation-actions button:hover,
+.team-button:hover {
+  background: #666;
+  transform: translateY(-2px);
+}
+
+.formation-main {
+  position: relative;
+  width: 940px;
+  height: 540px;
+  margin: 0 auto;
+}
+
+#formation-field {
+  position: relative;
+  width: 940px;
+  height: 540px;
+  background-image: url('images/fields/01.png');
+  background-size: cover;
+}
+
+#formation-grid {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 936px;
+  height: 360px;
+  display: grid;
+  grid-template-columns: repeat(13, 72px);
+  grid-template-rows: repeat(5, 72px);
+}
+
+#formation-overlay {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: 200px;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#formation-grid .cell {
+  width: 72px;
+  height: 72px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+#formation-grid .player-area {
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+#formation-grid .cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#unit-selection {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#unit-selection .unit-selection-content {
+  background: #fff;
+  padding: 1rem;
+  max-height: 80%;
+  overflow: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+#unit-selection img {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+}

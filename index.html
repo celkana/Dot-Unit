@@ -54,9 +54,37 @@
         </div>
         <div id="pagination" class="pagination"></div>
         <div class="footer-buttons">
-          <button id="formation-button" class="back-button">編成</button>
+          <button id="formation-button" class="back-button" data-target="formation-screen">編成</button>
           <button class="back-button" data-target="menu-screen">メニューに戻る</button>
         </div>
+      </div>
+    </section>
+
+    <section id="formation-screen" class="screen">
+      <div class="formation-top">
+        <div class="team-buttons">
+          <button class="team-button" data-team="1">チーム1</button>
+          <button class="team-button" data-team="2">チーム2</button>
+          <button class="team-button" data-team="3">チーム3</button>
+        </div>
+        <div class="formation-actions">
+          <button id="save-formation">保存</button>
+          <button id="reset-formation">リセット</button>
+          <button class="back-button" data-target="units-screen">戻る</button>
+        </div>
+      </div>
+      <div class="formation-main">
+        <div id="formation-field">
+          <div id="formation-grid"></div>
+          <div id="formation-overlay">
+            <div id="synergy">シナジー: なし</div>
+            <div id="selected-unit-stats">ユニット未選択</div>
+            <div id="player-status"></div>
+          </div>
+        </div>
+      </div>
+      <div id="unit-selection" class="hidden">
+        <div class="unit-selection-content"></div>
       </div>
     </section>
 

@@ -1,0 +1,6 @@
+{
+  "enemies": [
+    { "id": "goblin", "level": 2, "position": 10 },
+    { "id": "orc", "level": 3, "position": 13 }
+  ]
+}

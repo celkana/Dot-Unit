@@ -34,14 +34,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setRandomMenuBackground() {
   const menu = document.getElementById('menu-screen');
-  const images = [];
+  const candidates = [];
+  const promises = [];
+
   for (let i = 1; i <= 10; i++) {
     const num = String(i).padStart(2, '0');
-    images.push(`images/fields/${num}.png`);
+    const url = `images/stages/stage_${num}.png`;
+
+    // 画像がロードできるかチェック
+    const promise = new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(url);   // 読み込み成功
+      img.onerror = () => resolve(null); // 失敗なら無視
+      img.src = url;
+    });
+
+    promises.push(promise);
   }
-  const img = images[Math.floor(Math.random() * images.length)];
-  menu.style.backgroundImage = `url(${img})`;
+
+  Promise.all(promises).then((results) => {
+    // 存在するファイルだけ残す
+    const validImages = results.filter((url) => url !== null);
+
+    if (validImages.length > 0) {
+      const img = validImages[Math.floor(Math.random() * validImages.length)];
+      menu.style.backgroundImage = `url(${img})`;
+    } else {
+      console.warn("背景に使える画像が見つかりませんでした");
+    }
+  });
 }
+
 
 async function initMenuUnits() {
   const res = await fetch('data/units.json');

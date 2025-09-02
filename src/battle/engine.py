@@ -16,6 +16,7 @@ class BattleEngine:
         self.graveyard: List[Unit] = []
         self.base_control = {"player": 0, "enemy": 0}
         self.turn_logs: List[str] = []
+        self.forced_winner: Optional[str] = None
 
     @classmethod
     def start_battle(
@@ -77,6 +78,9 @@ class BattleEngine:
             self.attack(unit, target, skill)
         elif action in {"pass", "wait", "pass_turn"}:
             self.pass_turn(unit)
+        elif action == "surrender":
+            self.turn_logs.append(f"{unit.name} surrendered")
+            self.end_battle(False)
         else:
             # Unknown or malformed action – treat as a pass but record it.
             self.turn_logs.append(f"{unit.name} did nothing")
@@ -177,6 +181,7 @@ class BattleEngine:
         screen.
         """
         winner = "player" if victory else "enemy"
+        self.forced_winner = winner
         self.turn_logs.append(f"{winner} wins!")
         self.order.clear()
 
@@ -204,6 +209,8 @@ class BattleEngine:
 
     # Victory checks ----------------------------------------------------
     def check_victory(self) -> Optional[str]:
+        if self.forced_winner:
+            return self.forced_winner
         units = self.field.all_units()
         if not any(u.owner == "enemy" for u in units):
             return "player"

@@ -110,3 +110,34 @@ def test_obstacles_and_movement_rules():
     engine.move(hero, 1, 0)
     assert hero.position == (6, 2)
     assert engine.turn_logs[-1] == "Hero moved to (6, 2)"
+
+
+def test_take_turn_actions_move_attack_pass_surrender():
+    players, enemies = create_dummy_definitions()
+    engine = BattleEngine.start_battle(players, enemies, obstacles={(4, 2)})
+    hero = players[0]
+    goblin = enemies[0]
+
+    # move
+    engine.take_turn(hero, "move", 1, 0)
+    assert hero.position == (6, 2)
+    assert engine.turn_logs[-1] == "Hero moved to (6, 2)"
+
+    # moving into obstacle raises ValueError via field
+    with pytest.raises(ValueError):
+        engine.field.move_unit(hero, (4, 2))
+
+    # attack
+    engine.field.move_unit(goblin, (5, 2))
+    engine.take_turn(hero, "attack", goblin)
+    assert goblin.hp == 15
+    assert engine.turn_logs[-1] == "Hero used Slash on Goblin for 10 damage"
+
+    # pass
+    engine.take_turn(hero, "pass")
+    assert engine.turn_logs[-1] == "Hero passed"
+
+    # surrender
+    engine.take_turn(hero, "surrender")
+    assert engine.check_victory() == "enemy"
+    assert engine.turn_logs[-1] == "enemy wins!"

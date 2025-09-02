@@ -3,10 +3,10 @@
     {
       "id": "hero",
       "name": "Hero",
-      "hp": 30,
+      "hp": 28,
       "mp": 10,
-      "attack": 10,
-      "defense": 5,
+      "attack": 9,
+      "defense": 6,
       "speed": 5,
       "race": "human",
       "element": "none",
@@ -15,9 +15,9 @@
     {
       "id": "mage",
       "name": "Mage",
-      "hp": 20,
+      "hp": 18,
       "mp": 30,
-      "attack": 5,
+      "attack": 6,
       "defense": 3,
       "speed": 7,
       "race": "human",
@@ -27,26 +27,30 @@
     {
       "id": "goblin",
       "name": "Goblin",
-      "hp": 25,
+      "hp": 22,
       "mp": 0,
-      "attack": 8,
+      "attack": 7,
       "defense": 2,
       "speed": 4,
       "race": "beast",
       "element": "earth",
-      "skills": ["slash"]
+      "skills": ["slash"],
+      "drop": "potion",
+      "reward": {"gold": 5, "exp": 3}
     },
     {
       "id": "orc",
       "name": "Orc",
-      "hp": 35,
+      "hp": 38,
       "mp": 0,
-      "attack": 12,
-      "defense": 4,
+      "attack": 11,
+      "defense": 5,
       "speed": 3,
       "race": "beast",
       "element": "earth",
-      "skills": ["slash"]
+      "skills": ["slash"],
+      "drop": "sword",
+      "reward": {"gold": 12, "exp": 5}
     }
   ]
 }

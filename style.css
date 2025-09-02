@@ -63,3 +63,62 @@ html, body {
   justify-content: center;
   gap: 1rem;
 }
+
+#units-screen {
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.units-wrapper {
+  display: flex;
+  width: 100%;
+  flex: 1;
+}
+
+.unit-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.unit-card {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+#unit-sidebar {
+  width: 200px;
+  padding: 0.5rem;
+  border-left: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.units-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.unit-detail {
+  width: 100%;
+  margin-top: 1rem;
+  border-top: 1px solid #ccc;
+  padding-top: 1rem;
+}
+
+.hidden {
+  display: none;
+}

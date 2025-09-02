@@ -118,6 +118,31 @@ html, body {
   cursor: pointer;
 }
 
+.unit-card.rank-1 {
+  background: #ffffff;
+  color: #000;
+}
+
+.unit-card.rank-2 {
+  background: #d0f0ff;
+  color: #000;
+}
+
+.unit-card.rank-3 {
+  background: #d0ffd0;
+  color: #000;
+}
+
+.unit-card.rank-4 {
+  background: #fff0d0;
+  color: #000;
+}
+
+.unit-card.rank-5 {
+  background: #ffe0f0;
+  color: #000;
+}
+
 .unit-image {
   width: 64px;
   height: 64px;

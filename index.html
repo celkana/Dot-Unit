@@ -6,90 +6,50 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <section id="menu-screen" class="screen active">
-    <div class="menu-buttons">
-      <button data-target="battle-screen">バトル</button>
-      <button data-target="units-screen">ユニット</button>
-      <button data-target="items-screen">アイテム</button>
-      <button data-target="research-screen">研究</button>
-      <button data-target="options-screen">設定</button>
-    </div>
-  </section>
-
-  <section id="battle-screen" class="screen">
-    <div id="game-area">バトルフィールド</div>
-    <div class="battle-controls">
-      <button>移動</button>
-      <button>攻撃</button>
-      <button>待機</button>
-    </div>
-    <button class="back-button" data-target="menu-screen">メニューに戻る</button>
-  </section>
-
-  <section id="units-screen" class="screen">
-    <h2>ユニット一覧</h2>
-    <div class="units-wrapper">
-      <div id="unit-grid" class="unit-grid"></div>
-      <aside id="unit-sidebar">
-        <h3>所持ユニット</h3>
-        <p id="owned-count">0</p>
-      </aside>
-    </div>
-    <div class="units-controls">
-      <label>並び替え
-        <select id="sort-select">
-          <option value="name">名前</option>
-          <option value="hp">HP</option>
-          <option value="mp">MP</option>
-          <option value="attack">攻撃</option>
-          <option value="defense">防御</option>
-          <option value="speed">速度</option>
-        </select>
-      </label>
-      <label>属性
-        <select id="filter-element">
-          <option value="">すべて</option>
-          <option value="fire">火</option>
-          <option value="earth">土</option>
-          <option value="none">なし</option>
-        </select>
-      </label>
-      <label>種族
-        <select id="filter-race">
-          <option value="">すべて</option>
-          <option value="human">人間</option>
-          <option value="beast">獣</option>
-        </select>
-      </label>
-      <div class="pagination">
-        <button id="prev-page">前へ</button>
-        <span id="page-info">1/1</span>
-        <button id="next-page">次へ</button>
+  <div id="game-container">
+    <section id="menu-screen" class="screen active">
+      <h1 class="game-title">Dot-Unit</h1>
+      <div class="menu-buttons">
+        <button data-target="battle-screen">バトル</button>
+        <button data-target="units-screen">ユニット一覧</button>
+        <button data-target="items-screen">アイテム一覧</button>
+        <button data-target="research-screen">研究</button>
+        <button data-target="options-screen">設定</button>
       </div>
-    </div>
-    <button id="formation-button">編成</button>
-    <div id="unit-detail" class="unit-detail hidden"></div>
-    <button class="back-button" data-target="menu-screen">メニューに戻る</button>
-  </section>
+      <div id="menu-moving-units"></div>
+    </section>
 
-  <section id="items-screen" class="screen">
-    <h2>アイテム</h2>
-    <p>アイテムのプレースホルダー</p>
-    <button class="back-button" data-target="menu-screen">メニューに戻る</button>
-  </section>
+    <section id="units-screen" class="screen">
+      <h2>ユニット一覧</h2>
+      <div id="unit-grid" class="unit-grid"></div>
+      <div id="unit-detail" class="unit-detail hidden"></div>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
 
-  <section id="research-screen" class="screen">
-    <h2>研究</h2>
-    <p>研究の組み合わせは準備中</p>
-    <button class="back-button" data-target="menu-screen">メニューに戻る</button>
-  </section>
+    <section id="battle-screen" class="screen">
+      <h2>バトル</h2>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
 
-  <section id="options-screen" class="screen">
-    <h2>設定</h2>
-    <p>設定のプレースホルダー</p>
-    <button class="back-button" data-target="menu-screen">メニューに戻る</button>
-  </section>
+    <section id="items-screen" class="screen">
+      <h2>アイテム</h2>
+      <p>準備中</p>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
 
+    <section id="research-screen" class="screen">
+      <h2>研究</h2>
+      <p>準備中</p>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
+
+    <section id="options-screen" class="screen">
+      <h2>設定</h2>
+      <p>準備中</p>
+      <button class="back-button" data-target="menu-screen">メニューに戻る</button>
+    </section>
+  </div>
+  <div id="logs"></div>
   <script src="main.js"></script>
 </body>
 </html>

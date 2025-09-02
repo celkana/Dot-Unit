@@ -393,7 +393,14 @@ async function initFormationScreen() {
     const item = document.createElement('div');
     item.className = 'unit-slide-item';
     item.draggable = true;
-    item.innerHTML = `<img src="${u.image}" alt="${u.name}"><div class="unit-slide-info">R${u.rank} ${u.name} Lv${u.level}</div>`;
+    const stars = '★'.repeat(Number(u.rank));
+    const name = u.name.length > 6 ? u.name.slice(0, 6) : u.name;
+    item.innerHTML = `
+      <img src="${u.image}" alt="${u.name}">
+      <div class="unit-level">Lv${u.level}</div>
+      <div class="unit-stars">${stars}</div>
+      <div class="unit-slide-name">${name}</div>
+    `;
     item.addEventListener('dragstart', e => {
       e.dataTransfer.setData('unit', JSON.stringify(u));
     });
@@ -533,8 +540,7 @@ async function initFormationScreen() {
       <h4>${player.name}</h4>
       <p>Lv:${player.level}</p>
       <p>配置可能:${player.maxUnits}</p>
-      <p>ステ上昇 HP:${player.bonuses.hp}% MP:${player.bonuses.mp}%<br>攻:${player.bonuses.attack}% 防:${player.bonuses.defense}% 速:${player.bonuses.speed}%</p>
-      <p>ゴールド:${player.gold}</p>`;
+      <p>ステ上昇 HP:${player.bonuses.hp}% MP:${player.bonuses.mp}%<br>攻:${player.bonuses.attack}% 防:${player.bonuses.defense}% 速:${player.bonuses.speed}%</p>`;
   }
 
   window.loadFormationGrid = loadGrid;

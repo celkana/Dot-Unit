@@ -47,8 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
   showScreen('menu-screen');
   initUnitsScreen();
   initMenuUnits();
-  initFormationScreen();
   initWorldScreen();
+
+  const battleStart = document.getElementById('battle-start');
+  if (battleStart) {
+    battleStart.addEventListener('click', () => {
+      const num = String(currentStage).padStart(2, '0');
+      const battleScreen = document.getElementById('battle-screen');
+      if (battleScreen) {
+        battleScreen.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
+      }
+      window.showScreen('battle-screen');
+      initBattle();
+    });
+  }
+
+  initFormationScreen();
 
   const formationBtn = document.getElementById('formation-button');
   const formationBack = document.getElementById('formation-back');
@@ -584,16 +598,6 @@ async function initFormationScreen() {
   document.getElementById('reset-formation').addEventListener('click', () => {
     formations[currentTeam] = {};
     loadGrid();
-  });
-
-  document.getElementById('battle-start').addEventListener('click', () => {
-    const num = String(currentStage).padStart(2, '0');
-    const battleScreen = document.getElementById('battle-screen');
-    if (battleScreen) {
-      battleScreen.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
-    }
-    window.showScreen('battle-screen');
-    initBattle();
   });
 
   function updateTeamButtons() {

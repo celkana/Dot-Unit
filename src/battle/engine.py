@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from .entities import Skill, Unit
 from .grid import BattleField
@@ -16,6 +16,18 @@ class BattleEngine:
         self.graveyard: List[Unit] = []
         self.base_control = {"player": 0, "enemy": 0}
         self.turn_logs: List[str] = []
+
+    @classmethod
+    def start_battle(cls, players: List[Unit], enemies: List[Unit]) -> "BattleEngine":
+        """Create a battle engine with units placed on the field.
+
+        The units are expected to already have positions assigned based on
+        formation screen selections.
+        """
+        field = BattleField()
+        for unit in players + enemies:
+            field.add_unit(unit)
+        return cls(field)
 
     # Turn management ---------------------------------------------------
     def next_unit(self) -> Optional[Unit]:
@@ -60,6 +72,57 @@ class BattleEngine:
     def pass_turn(self, unit: Unit) -> None:
         self.turn_logs.append(f"{unit.name} passed")
         self._after_action()
+
+    def real_time_step(self, commands: Dict[Unit, Tuple[str, ...]]) -> None:
+        """Process one step of simultaneous actions.
+
+        ``commands`` maps player-controlled units to an action tuple. Actions
+        are of the form ``("move", dx, dy)`` or ``("attack", target[, skill])``.
+        Enemy units act automatically using a basic AI that moves toward the
+        nearest player and attacks when in range.
+        """
+        # Player actions
+        for unit, action in commands.items():
+            if unit not in self.field.all_units():
+                continue
+            act = action[0]
+            if act == "move" and len(action) >= 3:
+                self.move(unit, action[1], action[2])
+            elif act == "attack" and len(action) >= 2:
+                target = action[1]
+                skill = action[2] if len(action) > 2 else None
+                self.attack(unit, target, skill)
+
+        # Enemy AI actions
+        enemies = [u for u in list(self.field.all_units()) if u.owner == "enemy"]
+        players = [u for u in self.field.all_units() if u.owner == "player"]
+        for enemy in enemies:
+            if enemy not in self.field.all_units() or not players:
+                continue
+            target = min(
+                players,
+                key=lambda p: abs(p.position[0] - enemy.position[0])
+                + abs(p.position[1] - enemy.position[1]),
+            )
+            skill = enemy.skills[0]
+            distance = abs(target.position[0] - enemy.position[0]) + abs(
+                target.position[1] - enemy.position[1]
+            )
+            if distance <= skill.range:
+                self.attack(enemy, target, skill)
+            else:
+                dx = 1 if target.position[0] > enemy.position[0] else -1 if target.position[0] < enemy.position[0] else 0
+                dy = 1 if target.position[1] > enemy.position[1] else -1 if target.position[1] < enemy.position[1] else 0
+                try:
+                    self.move(enemy, dx, dy)
+                except ValueError:
+                    self.pass_turn(enemy)
+
+    def battle_status(self) -> Dict[str, object]:
+        """Return current HP of all units and the winner if any."""
+        status = {u.name: {"hp": u.hp, "owner": u.owner} for u in self.field.all_units()}
+        status["winner"] = self.check_victory()
+        return status
 
     # Internal helpers --------------------------------------------------
     def _update_base_control(self) -> None:

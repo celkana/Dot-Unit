@@ -13,7 +13,7 @@ class Skill:
     range: int  # Manhattan distance
 
 
-@dataclass
+@dataclass(eq=False)
 class Unit:
     """Minimal unit definition for the battle system."""
 
@@ -23,6 +23,9 @@ class Unit:
     position: Tuple[int, int]
     owner: str  # "player" or "enemy"
     skills: List[Skill] = field(default_factory=list)
+
+    # Allow units to be used as dictionary keys based on identity
+    __hash__ = object.__hash__
 
 
 def create_dummy_definitions() -> Tuple[List[Unit], List[Unit]]:

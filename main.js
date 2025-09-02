@@ -816,10 +816,9 @@ function initBattle() {
     }
   }
   battleEngine = window.battleEngine || battleEngine;
-  if (battleEngine && typeof battleEngine.next_unit === 'function') {
-    currentAttacker = battleEngine.next_unit();
+  if (typeof processTurn === 'function') {
+    processTurn();
   }
-  renderUnits();
   const attackBtn = document.getElementById('attack-button');
   if (attackBtn) attackBtn.onclick = showSkillModal;
   const passBtn = document.getElementById('pass-button');
@@ -829,10 +828,9 @@ function initBattle() {
       if (battleEngine && typeof battleEngine.pass_turn === 'function') {
         battleEngine.pass_turn(currentAttacker);
       }
-      if (battleEngine && typeof battleEngine.next_unit === 'function') {
-        currentAttacker = battleEngine.next_unit();
+      if (typeof processTurn === 'function') {
+        processTurn();
       }
-      renderUnits();
     };
   const surrenderBtn = document.getElementById('surrender-button');
   if (surrenderBtn)
@@ -897,11 +895,10 @@ function handleTargetSelect(x, y) {
   if (battleEngine && typeof battleEngine.attack === 'function') {
     battleEngine.attack(currentAttacker, target, pendingSkill);
   }
-  if (battleEngine && typeof battleEngine.next_unit === 'function') {
-    currentAttacker = battleEngine.next_unit();
-  }
-  renderUnits();
   pendingSkill = null;
+  if (typeof processTurn === 'function') {
+    processTurn();
+  }
 }
 
 function showBattleMessage(msg) {

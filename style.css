@@ -110,7 +110,8 @@ html, body {
 
 .unit-card {
   border: 1px solid #ccc;
-  background: #fff;
+  background: #575455;
+  color: #fff;
   padding: 0.5rem;
   display: flex;
   gap: 0.5rem;
@@ -122,6 +123,10 @@ html, body {
   height: 64px;
   object-fit: contain;
   object-position: bottom;
+}
+
+.unit-image.silhouette {
+  filter: brightness(0);
 }
 
 .unit-info {
@@ -166,6 +171,20 @@ html, body {
   font-size: 0.9rem;
 }
 
+.sort-filter select {
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sort-filter select:hover {
+  background: #666;
+}
+
 .pagination {
   display: flex;
   align-items: center;
@@ -178,4 +197,17 @@ html, body {
 
 .back-button {
   margin: 0;
+  background: #444;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, transform 0.1s;
+}
+
+.back-button:hover {
+  background: #666;
+  transform: translateY(-2px);
 }

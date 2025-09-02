@@ -75,14 +75,6 @@ async function initUnitsScreen() {
   let currentPage = 1;
   let filteredUnits = [...units];
 
-  populateFilterOptions();
-  renderCounts();
-  renderPage();
-
-  sortSelect.addEventListener('change', applySortFilter);
-  filterSelect.addEventListener('change', applySortFilter);
-  raceFilter.addEventListener('change', applySortFilter);
-
   const elementNames = {
     none: '無',
     fire: '火',
@@ -101,6 +93,14 @@ async function initUnitsScreen() {
     machine: '機械',
     plant: '植物'
   };
+
+  populateFilterOptions();
+  renderCounts();
+  renderPage();
+
+  sortSelect.addEventListener('change', applySortFilter);
+  filterSelect.addEventListener('change', applySortFilter);
+  raceFilter.addEventListener('change', applySortFilter);
 
   function populateFilterOptions() {
     const elements = [...new Set(units.map(u => u.element))];

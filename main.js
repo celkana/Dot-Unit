@@ -8,6 +8,9 @@ let currentStage = null;
 let enemyFormation = [];
 let unitsDataMap = {};
 let player = {};
+let battleEngine = null;
+let currentAttacker = null;
+let pendingSkill = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
@@ -576,7 +579,7 @@ async function initFormationScreen() {
 
   document.getElementById('battle-start').addEventListener('click', () => {
     window.showScreen('battle-screen');
-    setTimeout(() => window.endBattle(true), 500);
+    initBattle();
   });
 
   function updateTeamButtons() {
@@ -766,6 +769,97 @@ function calculateRewards() {
     exp += level * 20;
   });
   return { gold, exp };
+}
+
+function initBattle() {
+  const grid = document.getElementById('battle-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let y = 0; y < 5; y++) {
+    for (let x = 0; x < 7; x++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.x = x;
+      cell.dataset.y = y;
+      cell.addEventListener('click', () => handleTargetSelect(x, y));
+      grid.appendChild(cell);
+    }
+  }
+  battleEngine = window.battleEngine || battleEngine;
+  if (battleEngine && typeof battleEngine.next_unit === 'function') {
+    currentAttacker = battleEngine.next_unit();
+  }
+  const attackBtn = document.getElementById('attack-button');
+  if (attackBtn) attackBtn.onclick = showSkillModal;
+}
+
+function showSkillModal() {
+  if (!currentAttacker) return;
+  const modal = document.getElementById('skill-modal');
+  const list = document.getElementById('skill-list');
+  if (!modal || !list) return;
+  list.innerHTML = '';
+  currentAttacker.skills.forEach(skill => {
+    const btn = document.createElement('button');
+    btn.textContent = skill.name;
+    btn.addEventListener('click', () => {
+      pendingSkill = skill;
+      modal.classList.add('hidden');
+      showBattleMessage('対象マスを選択してください');
+    });
+    list.appendChild(btn);
+  });
+  modal.classList.remove('hidden');
+}
+
+function handleTargetSelect(x, y) {
+  if (!pendingSkill || !currentAttacker) return;
+  let target = null;
+  if (
+    battleEngine &&
+    battleEngine.field &&
+    typeof battleEngine.field.unit_at === 'function'
+  ) {
+    target = battleEngine.field.unit_at([x, y]);
+  }
+  if (!target) {
+    showBattleMessage('対象がいません');
+    if (battleEngine && battleEngine.turn_logs) {
+      battleEngine.turn_logs.push(`${currentAttacker.name} failed to attack`);
+    }
+    pendingSkill = null;
+    return;
+  }
+  const distance =
+    Math.abs(currentAttacker.position[0] - x) +
+    Math.abs(currentAttacker.position[1] - y);
+  if (distance > pendingSkill.range) {
+    showBattleMessage('射程外です');
+    if (battleEngine && battleEngine.turn_logs) {
+      battleEngine.turn_logs.push(`${currentAttacker.name} failed to attack`);
+    }
+    pendingSkill = null;
+    return;
+  }
+  clearBattleMessage();
+  if (battleEngine && typeof battleEngine.attack === 'function') {
+    battleEngine.attack(currentAttacker, target, pendingSkill);
+  }
+  pendingSkill = null;
+}
+
+function showBattleMessage(msg) {
+  const div = document.getElementById('battle-message');
+  if (!div) return;
+  div.textContent = msg;
+  div.classList.remove('hidden');
+}
+
+function clearBattleMessage() {
+  const div = document.getElementById('battle-message');
+  if (!div) return;
+  div.textContent = '';
+  div.classList.add('hidden');
 }
 
 function endBattle(victory) {

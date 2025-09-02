@@ -11,6 +11,15 @@ let player = {};
 let battleEngine = null;
 let currentAttacker = null;
 let pendingSkill = null;
+let battleResultInterval = null;
+
+document.addEventListener('battle:end', e => {
+  const victory = e.detail && e.detail.victory;
+  if (battleEngine && typeof battleEngine.end_battle === 'function') {
+    battleEngine.end_battle(victory);
+  }
+  endBattle(victory);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const screens = document.querySelectorAll('.screen');
@@ -771,6 +780,22 @@ function calculateRewards() {
   return { gold, exp };
 }
 
+function startBattleListener() {
+  if (battleResultInterval) clearInterval(battleResultInterval);
+  battleResultInterval = setInterval(() => {
+    if (!battleEngine || typeof battleEngine.check_victory !== 'function') return;
+    const winner = battleEngine.check_victory();
+    if (winner === 'player' || winner === 'enemy') {
+      const victory = winner === 'player';
+      document.dispatchEvent(
+        new CustomEvent('battle:end', { detail: { victory } })
+      );
+      clearInterval(battleResultInterval);
+      battleResultInterval = null;
+    }
+  }, 500);
+}
+
 function initBattle() {
   const grid = document.getElementById('battle-grid');
   if (!grid) return;
@@ -810,6 +835,7 @@ function initBattle() {
       }
       endBattle(false);
     };
+  startBattleListener();
 }
 
 function showSkillModal() {
@@ -882,6 +908,10 @@ function clearBattleMessage() {
 }
 
 function endBattle(victory) {
+  if (battleResultInterval) {
+    clearInterval(battleResultInterval);
+    battleResultInterval = null;
+  }
   const title = document.getElementById('result-title');
   const summary = document.getElementById('result-summary');
   const retryBtn = document.getElementById('retry-button');

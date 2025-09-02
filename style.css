@@ -420,6 +420,10 @@ html, body {
   justify-content: center;
 }
 
+#unit-selection.hidden {
+  display: none;
+}
+
 #unit-selection .unit-selection-content {
   background: #fff;
   padding: 1rem;

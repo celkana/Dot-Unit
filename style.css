@@ -103,7 +103,7 @@ html, body {
 
 .unit-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
   width: 100%;
 }
@@ -121,6 +121,7 @@ html, body {
   width: 64px;
   height: 64px;
   object-fit: contain;
+  object-position: bottom;
 }
 
 .unit-info {

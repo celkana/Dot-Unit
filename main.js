@@ -162,7 +162,7 @@ async function initUnitsScreen() {
     card.className = 'unit-card';
     const name = unit.acquired ? unit.name : '???';
     const stats = unit.acquired
-      ? `HP:${unit.hp} MP:${unit.mp} 攻:${unit.attack} 防:${unit.defense} 速:${unit.speed}`
+      ? `HP:${unit.hp} MP:${unit.mp} <br>攻:${unit.attack} 防:${unit.defense} 速:${unit.speed}`
       : '';
     const stars = '★'.repeat(rankValue(unit.rank));
     card.innerHTML = `
@@ -170,7 +170,7 @@ async function initUnitsScreen() {
       <div class="unit-info">
         <div class="unit-top">
           <div class="unit-rank">${stars}</div>
-          <div class="unit-level">Lv.1 【+0】</div>
+          <div class="unit-level">Lv.1<small>+0</small></div>
         </div>
         <div class="unit-name">${name}</div>
         <div class="unit-stats">${stats}</div>

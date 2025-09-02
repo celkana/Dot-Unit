@@ -25,18 +25,24 @@ async function loadItems() {
   return loadJSON('items.json');
 }
 
+async function loadBossSkills() {
+  return loadJSON('boss_skills.json');
+}
+
 async function loadAll() {
-  const [units, skills, items] = await Promise.all([
+  const [units, skills, items, bossSkills] = await Promise.all([
     loadUnits(),
     loadSkills(),
-    loadItems()
+    loadItems(),
+    loadBossSkills()
   ]);
-  return { units, skills, items };
+  return { units, skills, items, bossSkills };
 }
 
 module.exports = {
   loadUnits,
   loadSkills,
   loadItems,
+  loadBossSkills,
   loadAll
 };

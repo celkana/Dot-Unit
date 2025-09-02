@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function initMenuUnits() {
   const res = await fetch('data/units.json');
   const data = await res.json();
-  const units = data.units;
+  const units = data.units.filter(u => u.acquired);
   const container = document.getElementById('menu-moving-units');
   const width = container.clientWidth || 960;
 
@@ -52,32 +52,41 @@ async function initUnitsScreen() {
   const grid = document.getElementById('unit-grid');
   const detail = document.getElementById('unit-detail');
 
-  const displayUnits = units.slice();
-  while (displayUnits.length < 12) {
-    displayUnits.push(units[displayUnits.length % units.length]);
-  }
-
-  displayUnits.slice(0, 12).forEach(unit => {
+  units.forEach(unit => {
     const card = document.createElement('div');
     card.className = 'unit-card';
+    const name = unit.acquired ? unit.name : '???';
     card.innerHTML = `
       <img src="${unit.image}" alt="${unit.name}" class="unit-image">
-      <strong>${unit.name}</strong>`;
+      <strong>${name}</strong>`;
     card.addEventListener('click', () => showDetail(unit));
     grid.appendChild(card);
   });
 
   function showDetail(unit) {
     grid.classList.add('hidden');
-    detail.innerHTML = `
-      <img src="${unit.image}" alt="${unit.name}" class="unit-image">
-      <h3>${unit.name}</h3>
-      <p>HP: ${unit.hp}</p>
-      <p>MP: ${unit.mp}</p>
-      <p>攻撃: ${unit.attack}</p>
-      <p>防御: ${unit.defense}</p>
-      <p>速度: ${unit.speed}</p>
-      <button id="back-to-list">一覧に戻る</button>`;
+    if (unit.acquired) {
+      const drops = unit.drops ? unit.drops.map(d => `${d.item}(${d.rate})`).join(', ') : 'なし';
+      detail.innerHTML = `
+        <img src="${unit.image}" alt="${unit.name}" class="unit-image">
+        <h3>${unit.name}</h3>
+        <p>ランク: ${unit.rank}</p>
+        <p>HP: ${unit.hp}</p>
+        <p>MP: ${unit.mp}</p>
+        <p>攻撃: ${unit.attack}</p>
+        <p>防御: ${unit.defense}</p>
+        <p>速度: ${unit.speed}</p>
+        <p>武器スロット: ${unit.weaponSlots}</p>
+        <p>アーティファクトスロット: ${unit.artifactSlots}</p>
+        <p>装備可能武器タイプ: ${unit.weaponTypes.join(', ')}</p>
+        <p>ドロップ: ${drops}</p>
+        <button id="back-to-list">一覧に戻る</button>`;
+    } else {
+      detail.innerHTML = `
+        <h3>???</h3>
+        <p>未取得のユニットです。</p>
+        <button id="back-to-list">一覧に戻る</button>`;
+    }
     detail.classList.remove('hidden');
     document.getElementById('back-to-list').addEventListener('click', () => {
       detail.classList.add('hidden');

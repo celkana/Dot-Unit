@@ -11,9 +11,9 @@
     {
       "id": "amulet",
       "name": "幸運のお守り",
-      "type": "passive",
-      "effect": "速度が1上昇する。",
-      "stackable": true,
+      "type": "equipment",
+      "slot": "artifact",
+      "effect": "装備すると速度が1上昇する。",
       "drop_rate": 0.1,
       "value": 50
     },
@@ -21,6 +21,8 @@
       "id": "sword",
       "name": "鉄の剣",
       "type": "equipment",
+      "slot": "weapon",
+      "range_type": "melee",
       "effect": "装備すると攻撃力が5上昇する。",
       "drop_rate": 0.2,
       "value": 30

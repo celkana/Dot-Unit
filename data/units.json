@@ -11,6 +11,11 @@
       "speed": 5,
       "race": "human",
       "element": "none",
+      "rank": "S",
+      "weaponSlots": 2,
+      "artifactSlots": 1,
+      "weaponTypes": ["melee", "mid"],
+      "acquired": true,
       "skills": ["slash"]
     },
     {
@@ -24,6 +29,11 @@
       "speed": 7,
       "race": "human",
       "element": "fire",
+      "rank": "A",
+      "weaponSlots": 1,
+      "artifactSlots": 2,
+      "weaponTypes": ["mid", "ranged"],
+      "acquired": true,
       "skills": ["fireball"]
     },
     {
@@ -37,8 +47,16 @@
       "speed": 4,
       "race": "beast",
       "element": "earth",
+      "rank": "C",
+      "weaponSlots": 1,
+      "artifactSlots": 0,
+      "weaponTypes": ["melee"],
+      "acquired": false,
       "skills": ["slash"],
-      "drop": "potion",
+      "drops": [
+        {"item": "potion", "rate": 0.5},
+        {"item": "amulet", "rate": 0.1}
+      ],
       "reward": {"gold": 5, "exp": 3}
     },
     {
@@ -52,8 +70,16 @@
       "speed": 3,
       "race": "beast",
       "element": "earth",
+      "rank": "B",
+      "weaponSlots": 1,
+      "artifactSlots": 0,
+      "weaponTypes": ["melee", "mid"],
+      "acquired": false,
       "skills": ["slash"],
-      "drop": "sword",
+      "drops": [
+        {"item": "sword", "rate": 0.2},
+        {"item": "potion", "rate": 0.3}
+      ],
       "reward": {"gold": 12, "exp": 5}
     }
   ]

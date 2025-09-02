@@ -10,9 +10,8 @@ class UnitManager {
   async init() {
     const data = await loadUnits();
     this.units = data.units;
-    if (this.units.length && this.unlocked.size === 0) {
-      // unlock the first unit by default
-      this.unlocked.add(this.units[0].id);
+    if (this.unlocked.size === 0) {
+      this.units.filter(u => u.acquired).forEach(u => this.unlocked.add(u.id));
     }
   }
 

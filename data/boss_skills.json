@@ -1,0 +1,12 @@
+{
+  "skills": [
+    {
+      "id": "earthquake",
+      "name": "アースクエイク",
+      "power": 12,
+      "attribute": "earth",
+      "effect": "全ての敵に土属性ダメージを与える。",
+      "range": 3
+    }
+  ]
+}

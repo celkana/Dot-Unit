@@ -54,10 +54,30 @@ class ItemManager {
   }
 
   applyEquipment(item, unit) {
-    if (!unit.equipment) unit.equipment = {};
-    unit.equipment[item.id] = item;
-    if (item.id === 'sword') {
-      unit.attack = (unit.attack || 0) + 5;
+    if (!unit.equipment) unit.equipment = { weapons: [], artifacts: [], others: {} };
+    const slot = item.slot;
+    if (slot === 'weapon') {
+      unit.equipment.weapons = unit.equipment.weapons || [];
+      const max = unit.weaponSlots || 0;
+      if (unit.equipment.weapons.length >= max) {
+        throw new Error('No weapon slots left');
+      }
+      unit.equipment.weapons.push(item);
+      if (item.id === 'sword') {
+        unit.attack = (unit.attack || 0) + 5;
+      }
+    } else if (slot === 'artifact') {
+      unit.equipment.artifacts = unit.equipment.artifacts || [];
+      const max = unit.artifactSlots || 0;
+      if (unit.equipment.artifacts.length >= max) {
+        throw new Error('No artifact slots left');
+      }
+      unit.equipment.artifacts.push(item);
+      if (item.id === 'amulet') {
+        unit.speed = (unit.speed || 0) + 1;
+      }
+    } else {
+      unit.equipment.others[item.id] = item;
     }
   }
 }

@@ -87,7 +87,18 @@ UNIT_SCHEMA = {
                     "race": {"type": "string"},
                     "element": {"type": "string"},
                     "skills": {"type": "array"},
-                    "drop": {"type": "string"},
+                    "drops": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "required": ["item", "rate"],
+                            "properties": {
+                                "item": {"type": "string"},
+                                "rate": {"type": "number"}
+                            },
+                            "additionalProperties": False
+                        }
+                    },
                     "reward": {
                         "type": "object",
                         "properties": {
@@ -117,3 +128,7 @@ def test_skills_schema():
 
 def test_units_schema():
     Draft7Validator(UNIT_SCHEMA).validate(load("data/units.json"))
+
+
+def test_boss_skills_schema():
+    Draft7Validator(SKILL_SCHEMA).validate(load("data/boss_skills.json"))

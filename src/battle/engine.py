@@ -97,25 +97,39 @@ class BattleEngine:
             self.turn_logs.append(f"{unit.name} failed to move")
         self._after_action()
 
-    def attack(self, attacker: Unit, target: Unit, skill: Optional[Skill] = None) -> None:
+    def attack(
+        self,
+        attacker: Unit,
+        target: Unit | List[Unit],
+        skill: Optional[Skill] = None,
+    ) -> None:
         if skill is None:
             skill = attacker.skills[0]
-        distance = abs(attacker.position[0] - target.position[0]) + abs(
-            attacker.position[1] - target.position[1]
-        )
-        if distance <= skill.range:
-            target.hp -= skill.power
-            self.turn_logs.append(
-                f"{attacker.name} used {skill.name} on {target.name} for {skill.power} damage"
+
+        # Support single or multiple targets.
+        targets = target if isinstance(target, list) else [target]
+        for tgt in targets:
+            if tgt not in self.field.all_units():
+                self.turn_logs.append(f"{attacker.name} missed {tgt.name}")
+                continue
+
+            distance = abs(attacker.position[0] - tgt.position[0]) + abs(
+                attacker.position[1] - tgt.position[1]
             )
-            if target.hp <= 0:
-                self.turn_logs.append(f"{target.name} was defeated")
-                self.field.remove_unit(target)
-                if target in self.order:
-                    self.order.remove(target)
-                self.graveyard.append(target)
-        else:
-            self.turn_logs.append(f"{attacker.name} missed {target.name}")
+            if distance <= skill.range:
+                tgt.hp -= skill.power
+                self.turn_logs.append(
+                    f"{attacker.name} used {skill.name} on {tgt.name} for {skill.power} damage"
+                )
+                if tgt.hp <= 0:
+                    self.turn_logs.append(f"{tgt.name} was defeated")
+                    self.field.remove_unit(tgt)
+                    if tgt in self.order:
+                        self.order.remove(tgt)
+                    self.graveyard.append(tgt)
+            else:
+                self.turn_logs.append(f"{attacker.name} missed {tgt.name}")
+
         self._after_action()
 
     def pass_turn(self, unit: Unit) -> None:

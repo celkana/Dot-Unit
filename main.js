@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         battleScreen.style.backgroundImage = `url(images/stages/stage_${num}.png)`;
       }
       await initBattle();
-      window.showScreen('battle-screen');
+      showScreen('battle-screen');
     });
   }
 

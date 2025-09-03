@@ -51,7 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const battleStart = document.getElementById('battle-start');
   if (battleStart) {
+    battleStart.disabled = true;
     battleStart.addEventListener('click', async () => {
+      if (currentStage == null) {
+        alert('ステージを選択してください');
+        return;
+      }
       const num = String(currentStage).padStart(2, '0');
       const battleScreen = document.getElementById('battle-screen');
       if (battleScreen) {
@@ -661,6 +666,8 @@ function initWorldScreen() {
 function selectField(id, name) {
   currentField = Number(id);
   currentStage = null;
+  const battleStartBtn = document.getElementById('battle-start');
+  if (battleStartBtn) battleStartBtn.disabled = true;
   const num = String(id).padStart(2, '0');
   const fieldScreen = document.getElementById('field-screen');
   const title = document.getElementById('field-name');
@@ -695,6 +702,8 @@ function renderStageButtons(fieldId) {
 
 function selectStage(fieldId, stageNumber) {
   currentStage = stageNumber;
+  const battleStartBtn = document.getElementById('battle-start');
+  if (battleStartBtn) battleStartBtn.disabled = false;
   const num = String(stageNumber).padStart(2, '0');
   const formationField = document.getElementById('formation-field');
   if (formationField) {

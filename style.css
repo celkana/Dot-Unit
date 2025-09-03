@@ -513,6 +513,10 @@ html, body {
   object-fit: contain;
 }
 
+.enemy-unit {
+  height: 100%;
+}
+
 .player-unit {
   transform: scaleX(-1);
 }

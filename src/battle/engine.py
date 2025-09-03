@@ -18,6 +18,11 @@ class BattleEngine:
         self.turn_logs: List[str] = []
         self.forced_winner: Optional[str] = None
 
+    @staticmethod
+    def _distance(a: Unit, b: Unit) -> int:
+        """Return the Manhattan distance between ``a`` and ``b``."""
+        return abs(a.position[0] - b.position[0]) + abs(a.position[1] - b.position[1])
+
     @classmethod
     def start_battle(
         cls,
@@ -113,22 +118,21 @@ class BattleEngine:
                 self.turn_logs.append(f"{attacker.name} missed {tgt.name}")
                 continue
 
-            distance = abs(attacker.position[0] - tgt.position[0]) + abs(
-                attacker.position[1] - tgt.position[1]
-            )
-            if distance <= skill.range:
-                tgt.hp -= skill.power
-                self.turn_logs.append(
-                    f"{attacker.name} used {skill.name} on {tgt.name} for {skill.power} damage"
-                )
-                if tgt.hp <= 0:
-                    self.turn_logs.append(f"{tgt.name} was defeated")
-                    self.field.remove_unit(tgt)
-                    if tgt in self.order:
-                        self.order.remove(tgt)
-                    self.graveyard.append(tgt)
-            else:
+            distance = self._distance(attacker, tgt)
+            if distance > skill.range:
                 self.turn_logs.append(f"{attacker.name} missed {tgt.name}")
+                continue
+
+            tgt.hp -= skill.power
+            self.turn_logs.append(
+                f"{attacker.name} used {skill.name} on {tgt.name} for {skill.power} damage"
+            )
+            if tgt.hp <= 0:
+                self.turn_logs.append(f"{tgt.name} was defeated")
+                self.field.remove_unit(tgt)
+                if tgt in self.order:
+                    self.order.remove(tgt)
+                self.graveyard.append(tgt)
 
         self._after_action()
 
@@ -162,15 +166,9 @@ class BattleEngine:
         for enemy in enemies:
             if enemy not in self.field.all_units() or not players:
                 continue
-            target = min(
-                players,
-                key=lambda p: abs(p.position[0] - enemy.position[0])
-                + abs(p.position[1] - enemy.position[1]),
-            )
+            target = min(players, key=lambda p: self._distance(p, enemy))
             skill = enemy.skills[0]
-            distance = abs(target.position[0] - enemy.position[0]) + abs(
-                target.position[1] - enemy.position[1]
-            )
+            distance = self._distance(target, enemy)
             if distance <= skill.range:
                 self.attack(enemy, target, skill)
             else:
